@@ -2,6 +2,7 @@ Changes
 lib/WWW/StatsMix.pm
 lib/WWW/StatsMix/Metric.pm
 lib/WWW/StatsMix/Stat.pm
+lib/WWW/StatsMix/Params.pm
 lib/WWW/StatsMix/UserAgent.pm
 lib/WWW/StatsMix/UserAgent/Exception.pm
 Makefile.PL
