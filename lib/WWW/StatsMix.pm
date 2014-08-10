@@ -3,6 +3,16 @@ package WWW::StatsMix;
 $WWW::StatsMix::VERSION = '0.01';
 
 use 5.006;
+use JSON;
+use Data::Dumper;
+
+use WWW::StatsMix::UserAgent;
+use WWW::StatsMix::Stat;
+use WWW::StatsMix::Metric;
+
+use Moo;
+use namespace::clean;
+extends 'WWW::StatsMix::UserAgent';
 
 =head1 NAME
 
@@ -12,11 +22,83 @@ WWW::StatsMix - Interface to StatsMix API.
 
 Version 0.01
 
+=cut
+
+has metrics_url => (is => 'ro', default => sub { return 'http://api.statsmix.com/api/v2/metrics' });
+has stats_url   => (is => 'ro', default => sub { return 'http://api.statsmix.com/api/v2/stats'   });
+has track_url   => (is => 'ro', default => sub { return 'http://api.statsmix.com/api/v2/track'   });
+
 =head1 DESCRIPTION
+
+L<WWW::StatsMix> provides suite to to track, chart,  and share all your important
+metrics. The API is part of Copper.io - a full stact set of developer tools.  For
+more details about the API L<click here|http://www.statsmix.com/developers/documentation>.
 
 =head1 METHODS
 
-=head1 AUTHOR
+=head2 create_metric()
+
+=cut
+
+sub create_metric {
+}
+
+=head2 update_metric()
+
+=cut
+
+sub update_metric {
+}
+
+=head2 get_metrics()
+
+=cut
+
+sub get_metrics {
+}
+
+=head2 create_stat()
+
+- Create a stat with a reference id (REF_ID).
+- Create a stat with metadata and custom timestamp (POST)
+
+=cut
+
+sub create_stat {
+}
+
+=head2 update_stat()
+
+- Update stat using stat_id (GET)
+- Update stat using ref_id (GET)
+
+=cut
+
+sub update_stat {
+}
+
+
+=head2 delete_stat()
+
+- Delete stat using stat_id (GET)
+- Delete stat using ref_id (GET)
+
+=cut
+
+sub delete_stat {
+}
+
+=head2 get_stats()
+
+- Show a stat using stat_id (GET)
+- Show a stat using ref_id (GET)
+
+=cut
+
+sub get_stats {
+}
+
+=head1 Author
 
 Mohammad S Anwar, C<< <mohammad.anwar at yahoo.com> >>
 

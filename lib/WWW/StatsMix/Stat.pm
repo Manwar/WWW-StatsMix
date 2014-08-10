@@ -1,38 +1,20 @@
-package WWW::StatsMix::UserAgent::Exception;
+package WWW::StatsMix::Stat;
 
-$WWW::StatsMix::UserAgent::Exception::VERSION = '0.01';
+$WWW::StatsMix::Stat::VERSION = '0.01';
 
 use 5.006;
-use Moo;
-use namespace::clean;
-with 'Throwable';
-
-use overload q{""} => 'as_string', fallback => 1;
-
-has method      => (is => 'ro');
-has message     => (is => 'ro');
-has code        => (is => 'ro');
-has reason      => (is => 'ro');
-has filename    => (is => 'ro');
-has line_number => (is => 'ro');
 
 =head1 NAME
 
-WWW::StatsMix::UserAgent::Exception - StatsMix API user agent exception class.
+WWW::StatsMix::Stat - Placeholder for StatsMix Stat.
 
 =head1 VERSION
 
 Version 0.01
 
-=cut
+=head1 DESCRIPTION
 
-sub as_string {
-    my ($self) = @_;
-
-    return sprintf("%s(): %s (status: %s) file %s on line %d\n",
-                   $self->method, $self->message, $self->code,
-                   $self->filename, $self->line_number);
-}
+=head1 METHODS
 
 =head1 AUTHOR
 
@@ -49,7 +31,7 @@ bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc WWW::StatsMix::UserAgent::Exception
+    perldoc WWW::StatsMix::Stat
 
 You can also look for information at:
 
@@ -111,4 +93,4 @@ OF THE PACKAGE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 =cut
 
-1; # End of WWW::StatsMix::UserAgent::Exception
+1; # End of WWW::StatsMix::Stat

@@ -3,6 +3,13 @@ package WWW::StatsMix::UserAgent;
 $WWW::StatsMix::UserAgent::VERSION = '0.01';
 
 use 5.006;
+use Data::Dumper;
+
+use HTTP::Tiny;
+use WWW::StatsMix::UserAgent::Exception;
+
+use Moo;
+use namespace::clean;
 
 =head1 NAME
 
@@ -12,9 +19,104 @@ WWW::StatsMix::UserAgent - StatsMix API user agent library.
 
 Version 0.01
 
+=cut
+
+has 'api_key' => ( is => 'ro', required => 1 );
+has 'ua'      => ( is => 'rw', default  => sub { HTTP::Tiny->new(agent => "WWW-StatsMix-API/0.01"); } );
+
 =head1 DESCRIPTION
 
+The L<WWW::StatsMix::UserAgent>  module  is part of the core library for StatsMix
+API services.
+
 =head1 METHODS
+
+=head2 get(<url>)
+
+The method get() expects one parameter i.e. URL and returns the standard response.
+On error throws exception of type L<WWW::StatsMix::UserAgent::Exception>.
+
+=cut
+
+sub get {
+    my ($self, $url) = @_;
+
+    my $ua = $self->ua;
+    my $response = $ua->request('GET', $url);
+
+    my @caller = caller(1);
+    @caller = caller(2) if $caller[3] eq '(eval)';
+
+    unless ($response->{success}) {
+	WWW::StatsMix::UserAgent::Exception->throw({
+            method      => $caller[3],
+            message     => "request to API failed",
+            code        => $response->{status},
+            reason      => $response->{reason},
+            filename    => $caller[1],
+            line_number => $caller[2] });
+    }
+
+    return $response;
+}
+
+=head2 put(<url>, <headers>, <content>)
+
+The method put()  expects three parameters i.e. URL, Headers, Content in the same
+order and returns the standard response. On error throws exception of type L<WWW::StatsMix::UserAgent::Exception>.
+
+=cut
+
+sub put {
+    my ($self, $url, $headers, $content) = @_;
+
+    my $ua = $self->ua;
+    my $response = $ua->request('PUT', $url, { headers => $headers, content => $content });
+
+    my @caller = caller(1);
+    @caller = caller(2) if $caller[3] eq '(eval)';
+
+    unless ($response->{success}) {
+        WWW::StatsMix::UserAgent::Exception->throw({
+            method      => $caller[3],
+            message     => "request to API failed",
+            code        => $response->{status},
+            reason      => $response->{reason},
+            filename    => $caller[1],
+            line_number => $caller[2] });
+    }
+
+    return $response;
+}
+
+=head2 post(<url>, <headers>, <content>)
+
+The method post() expects three parameters i.e. URL, Headers, Content in the same
+order and returns the standard response. On error throws exception of type L<WWW::StatsMix::UserAgent::Exception>.
+
+=cut
+
+sub post {
+    my ($self, $url, $headers, $content) = @_;
+
+    my $ua = $self->ua;
+    my $response = $ua->request('POST', $url, { headers => $headers, content => $content });
+
+    my @caller = caller(1);
+    @caller = caller(2) if $caller[3] eq '(eval)';
+
+    unless ($response->{success}) {
+        WWW::StatsMix::UserAgent::Exception->throw({
+            method      => $caller[3],
+            message     => "request to API failed",
+            code        => $response->{status},
+            reason      => $response->{reason},
+            filename    => $caller[1],
+            line_number => $caller[2] });
+    }
+
+    return $response;
+}
 
 =head1 AUTHOR
 
