@@ -3,6 +3,8 @@ package WWW::StatsMix::Metric;
 $WWW::StatsMix::Metric::VERSION = '0.01';
 
 use 5.006;
+use Moo;
+use namespace::clean;
 
 =head1 NAME
 
@@ -12,9 +14,36 @@ WWW::StatsMix::Metric - Placeholder for StatsMix Metric.
 
 Version 0.01
 
+=cut
+
+has id               => (is => 'ro');
+has name             => (is => 'ro');
+has profile_id       => (is => 'ro');
+has include_in_email => (is => 'ro');
+has sharing          => (is => 'ro');
+has url              => (is => 'ro');
+has created_at       => (is => 'ro');
+has updated_at       => (is => 'ro');
+
 =head1 DESCRIPTION
 
 =head1 METHODS
+
+=head2 id()
+
+=head2 name()
+
+=head2 profile_id()
+
+=head2 include_in_email()
+
+=head2 sharing()
+
+=head2 url()
+
+=head2 created_at()
+
+=head2 updated_at()
 
 =head1 AUTHOR
 

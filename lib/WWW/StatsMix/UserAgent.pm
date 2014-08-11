@@ -42,8 +42,8 @@ sub get {
     my ($self, $url) = @_;
 
     my $ua = $self->ua;
-    my $response = $ua->request('GET', $url);
-
+    my $headers  = { "X-StatsMix-Token" => $self->api_key, "Accept" => "*/*" };
+    my $response = $ua->request('GET', $url, { headers => $headers });
     my @caller = caller(1);
     @caller = caller(2) if $caller[3] eq '(eval)';
 

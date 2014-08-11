@@ -24,9 +24,9 @@ Version 0.01
 
 =cut
 
-has metrics_url => (is => 'ro', default => sub { return 'http://api.statsmix.com/api/v2/metrics' });
-has stats_url   => (is => 'ro', default => sub { return 'http://api.statsmix.com/api/v2/stats'   });
-has track_url   => (is => 'ro', default => sub { return 'http://api.statsmix.com/api/v2/track'   });
+has metrics_url => (is => 'ro', default => sub { return 'http://api.statsmix.com/api/v2/metrics?format=json' });
+has stats_url   => (is => 'ro', default => sub { return 'http://api.statsmix.com/api/v2/stats?format=json'   });
+has track_url   => (is => 'ro', default => sub { return 'http://api.statsmix.com/api/v2/track?format=json'   });
 
 =head1 DESCRIPTION
 
@@ -55,6 +55,11 @@ sub update_metric {
 =cut
 
 sub get_metrics {
+    my ($self) = @_;
+
+    my $response = $self->get($self->metrics_url);
+    my $content  = from_json($response->{content});
+    return _get_metrics($content);
 }
 
 =head2 create_stat()
@@ -96,6 +101,21 @@ sub delete_stat {
 =cut
 
 sub get_stats {
+}
+
+# PRIVATE METHODS
+#
+#
+
+sub _get_metrics {
+    my ($content) = @_;
+
+    my $metrics = [];
+    foreach (@{$content->{metrics}->{metric}}) {
+        push @$metrics, WWW::StatsMix::Metric->new($_);
+    }
+
+    return $metrics;
 }
 
 =head1 Author
