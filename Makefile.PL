@@ -18,6 +18,22 @@ WriteMakefile(
         'Test::More' => 0,
     },
     PREREQ_PM => {
+        'JSON' => 0,
+        'Moo'  => 0,
+        'namespace::clean'      => 0,
+        'Throwable'             => 0,
+        'LWP::UserAgent'        => 0,
+        'HTTP::Request::Common' => 0,
+    },
+    META_MERGE => {
+        'meta-spec' => { version => 2 },
+        resources   => {
+            repository => {
+                type => 'git',
+                url  => 'https://github.com/Manwar/WWW-StatsMix.git',
+                web  => 'https://github.com/Manwar/WWW-StatsMix',
+            },
+        },
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES => 'WWW-StatsMix-*' },

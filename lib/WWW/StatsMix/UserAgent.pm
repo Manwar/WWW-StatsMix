@@ -3,9 +3,11 @@ package WWW::StatsMix::UserAgent;
 $WWW::StatsMix::UserAgent::VERSION = '0.01';
 
 use 5.006;
+use JSON;
 use Data::Dumper;
 
-use HTTP::Tiny;
+use LWP::UserAgent;
+use HTTP::Request::Common qw(POST PUT GET);
 use WWW::StatsMix::UserAgent::Exception;
 
 use Moo;
@@ -22,7 +24,7 @@ Version 0.01
 =cut
 
 has 'api_key' => ( is => 'ro', required => 1 );
-has 'ua'      => ( is => 'rw', default  => sub { HTTP::Tiny->new(agent => "WWW-StatsMix-API/0.01"); } );
+has 'ua'      => ( is => 'rw', default  => sub { LWP::UserAgent->new(agent => "WWW-StatsMix-API/0.01"); } );
 
 =head1 DESCRIPTION
 
@@ -41,26 +43,13 @@ On error throws exception of type L<WWW::StatsMix::UserAgent::Exception>.
 sub get {
     my ($self, $url) = @_;
 
-    my $ua = $self->ua;
-    my $headers  = { "X-StatsMix-Token" => $self->api_key, "Accept" => "*/*" };
-    my $response = $ua->request('GET', $url, { headers => $headers });
-    my @caller = caller(1);
-    @caller = caller(2) if $caller[3] eq '(eval)';
+    my $request = GET($url);
+    $request->header("X-StatsMix-Token", $self->api_key);
 
-    unless ($response->{success}) {
-	WWW::StatsMix::UserAgent::Exception->throw({
-            method      => $caller[3],
-            message     => "request to API failed",
-            code        => $response->{status},
-            reason      => $response->{reason},
-            filename    => $caller[1],
-            line_number => $caller[2] });
-    }
-
-    return $response;
+    return _response($self->ua->request($request));
 }
 
-=head2 put(<url>, <headers>, <content>)
+=head2 put(<url>, <content>)
 
 The method put()  expects three parameters i.e. URL, Headers, Content in the same
 order and returns the standard response. On error throws exception of type L<WWW::StatsMix::UserAgent::Exception>.
@@ -68,28 +57,16 @@ order and returns the standard response. On error throws exception of type L<WWW
 =cut
 
 sub put {
-    my ($self, $url, $headers, $content) = @_;
+    my ($self, $url, $content) = @_;
 
-    my $ua = $self->ua;
-    my $response = $ua->request('PUT', $url, { headers => $headers, content => $content });
+    my $request = POST($url, $content);
+    $request->method('PUT');
+    $request->header("X-StatsMix-Token", $self->api_key);
 
-    my @caller = caller(1);
-    @caller = caller(2) if $caller[3] eq '(eval)';
-
-    unless ($response->{success}) {
-        WWW::StatsMix::UserAgent::Exception->throw({
-            method      => $caller[3],
-            message     => "request to API failed",
-            code        => $response->{status},
-            reason      => $response->{reason},
-            filename    => $caller[1],
-            line_number => $caller[2] });
-    }
-
-    return $response;
+    return _response($self->ua->request($request));
 }
 
-=head2 post(<url>, <headers>, <content>)
+=head2 post(<url>, <content>)
 
 The method post() expects three parameters i.e. URL, Headers, Content in the same
 order and returns the standard response. On error throws exception of type L<WWW::StatsMix::UserAgent::Exception>.
@@ -97,20 +74,25 @@ order and returns the standard response. On error throws exception of type L<WWW
 =cut
 
 sub post {
-    my ($self, $url, $headers, $content) = @_;
+    my ($self, $url, $content) = @_;
 
-    my $ua = $self->ua;
-    my $response = $ua->request('POST', $url, { headers => $headers, content => $content });
+    my $request = POST($url, $content);
+    $request->header("X-StatsMix-Token", $self->api_key);
+
+    return _response($self->ua->request($request));
+}
+
+sub _response {
+    my ($response) = @_;
 
     my @caller = caller(1);
     @caller = caller(2) if $caller[3] eq '(eval)';
 
-    unless ($response->{success}) {
+    unless ($response->is_success) {
         WWW::StatsMix::UserAgent::Exception->throw({
             method      => $caller[3],
-            message     => "request to API failed",
-            code        => $response->{status},
-            reason      => $response->{reason},
+            message     => $response->message,
+            code        => $response->code,
             filename    => $caller[1],
             line_number => $caller[2] });
     }

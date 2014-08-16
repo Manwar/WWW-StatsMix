@@ -12,7 +12,6 @@ use overload q{""} => 'as_string', fallback => 1;
 has method      => (is => 'ro');
 has message     => (is => 'ro');
 has code        => (is => 'ro');
-has reason      => (is => 'ro');
 has filename    => (is => 'ro');
 has line_number => (is => 'ro');
 

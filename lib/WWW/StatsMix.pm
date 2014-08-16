@@ -6,9 +6,9 @@ use 5.006;
 use JSON;
 use Data::Dumper;
 
-use WWW::StatsMix::UserAgent;
 use WWW::StatsMix::Stat;
 use WWW::StatsMix::Metric;
+use WWW::StatsMix::UserAgent;
 
 use Moo;
 use namespace::clean;
@@ -24,9 +24,10 @@ Version 0.01
 
 =cut
 
-has metrics_url => (is => 'ro', default => sub { return 'http://api.statsmix.com/api/v2/metrics?format=json' });
-has stats_url   => (is => 'ro', default => sub { return 'http://api.statsmix.com/api/v2/stats?format=json'   });
-has track_url   => (is => 'ro', default => sub { return 'http://api.statsmix.com/api/v2/track?format=json'   });
+has format      => (is => 'ro', default => sub { return 'json' });
+has metrics_url => (is => 'ro', default => sub { return 'http://api.statsmix.com/api/v2/metrics' });
+has stats_url   => (is => 'ro', default => sub { return 'http://api.statsmix.com/api/v2/stats'   });
+has track_url   => (is => 'ro', default => sub { return 'http://api.statsmix.com/api/v2/track'   });
 
 =head1 DESCRIPTION
 
@@ -34,31 +35,123 @@ L<WWW::StatsMix> provides suite to to track, chart,  and share all your importan
 metrics. The API is part of Copper.io - a full stact set of developer tools.  For
 more details about the API L<click here|http://www.statsmix.com/developers/documentation>.
 
+=head1 SYNOPSIS
+
+    use strict; use warnings;
+    use WWW::StatsMix;
+
+    my $API_KEY = "Your API Key";
+    my $api = WWW::StatsMix->new(api_key => $API_KEY);
+
+    my $metric_1 = $api->create_metric({ name => "Testing - 1" });
+    my $metric_2 = $api->create_metric({ name => "Testing - 2", include_in_email => 0 });
+    $api->update_metric($metric_2->id, { name => "Testing - 3", include_in_email => 1 });
+
+    my $metrics  = $api->get_metrics;
+    my $only_2   = $api->get_metrics({ limit => 2 });
+
 =head1 METHODS
 
 =head2 create_metric()
 
+Creates new metric. Possible parameters for the method are as below:
+
+   +------------------+-----------------------------------------------------------------------+
+   | Key              | Description                                                           |
+   +------------------+-----------------------------------------------------------------------+
+   | name             | The name of the metric. Metric names must be unique within a profile. |
+   |                  |                                                                       |
+   | profile_id       | The profile the metric belongs in.                                    |
+   |                  |                                                                       |
+   | sharing          | Sharing status for the metric. Either "public" (unauthenticated users |
+   |                  | can view the metric at the specific URL) or "none" (default).         |
+   |                  |                                                                       |
+   | include_in_email | This specifies whether to include the metric in the daily             |
+   |                  | StatsMix email sent to users.                                         |
+   |                  |                                                                       |
+   | url              | Publicly accessible URL for the metric (only if sharing is set        |
+   |                  | to "public").                                                         |
+   +------------------+-----------------------------------------------------------------------+
+
 =cut
 
 sub create_metric {
+    my ($self, $params) = @_;
+
+    $params->{format} = $self->format;
+    my $response = $self->post($self->metrics_url, [ %$params ]);
+    my $content  = from_json($response->content);
+
+    return WWW::StatsMix::Metric->new($content->{metric});
 }
 
 =head2 update_metric()
 
+Updates the metric. Possible parameters for the method are as below:
+
+   +------------------+-----------------------------------------------------------------------+
+   | Key              | Description                                                           |
+   +------------------+-----------------------------------------------------------------------+
+   | name             | The name of the metric. Metric names must be unique within a profile. |
+   |                  |                                                                       |
+   | profile_id       | The profile the metric belongs in.                                    |
+   |                  |                                                                       |
+   | sharing          | Sharing status for the metric. Either "public" (unauthenticated users |
+   |                  | can view the metric at the specific URL) or "none" (default).         |
+   |                  |                                                                       |
+   | include_in_email | This specifies whether to include the metric in the daily             |
+   |                  | StatsMix email sent to users.                                         |
+   |                  |                                                                       |
+   | url              | Publicly accessible URL for the metric (only if sharing is set        |
+   |                  | to "public").                                                         |
+   +------------------+-----------------------------------------------------------------------+
+
 =cut
 
 sub update_metric {
+    my ($self, $id, $params) = @_;
+
+    my $url      = sprintf("%s/%d.json", $self->metrics_url, $id);
+    my $response = $self->put($url, [ %$params ]);
+    my $content  = from_json($response->content);
+
+    return WWW::StatsMix::Metric->new($content->{metric});
 }
 
 =head2 get_metrics()
 
+The method get_metrics() will return a default of up to 50 records. The parameter
+limit  can  be  passed  to specify the number of records to return. The parameter
+profile_id  can also be used to scope records to a particular profile. Parameters
+start_date &  end_date can be used to limit the date range based on the timestamp
+in a stat's generated_at.
+
+   +------------+---------------------------------------------------------------+
+   | Key        | Description                                                   |
+   +------------+---------------------------------------------------------------+
+   | limit      | Limit the number of metrics. Default is 50.                   |
+   |            |                                                               |
+   | profile_id | Scope the search to a particular profile.                     |
+   |            |                                                               |
+   | start_date | Limit the searh in date range against stats generated_at key. |
+   | / end_date |                                                               |
+   +------------+---------------------------------------------------------------+
+
 =cut
 
 sub get_metrics {
-    my ($self) = @_;
+    my ($self, $params) = @_;
 
-    my $response = $self->get($self->metrics_url);
-    my $content  = from_json($response->{content});
+    my $url = sprintf("%s?format=%s", $self->metrics_url, $self->format);
+    foreach (qw(limit profile_id start_date end_date)) {
+        if (exists $params->{$_}) {
+            $url .= sprintf("&%s=%s", $_, $params->{$_});
+        }
+    }
+
+    my $response = $self->get($url);
+    my $content  = from_json($response->content);
+
     return _get_metrics($content);
 }
 
@@ -121,6 +214,10 @@ sub _get_metrics {
 =head1 Author
 
 Mohammad S Anwar, C<< <mohammad.anwar at yahoo.com> >>
+
+=head1 REPOSITORY
+
+L<https://github.com/Manwar/WWW-StatsMix>
 
 =head1 BUGS
 
