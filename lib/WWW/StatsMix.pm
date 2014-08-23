@@ -157,12 +157,32 @@ sub get_metrics {
 
 =head2 create_stat()
 
-- Create a stat with a reference id (REF_ID).
-- Create a stat with metadata and custom timestamp (POST)
+The  method  create_stat() creates stat for the given metric. You can also create
+stat with ref_id.
+
+   +--------------+---------------------------------------------------------------+
+   | Key          | Description                                                   |
+   +--------------+---------------------------------------------------------------+
+   | metric_id    | The metric id for which the stat would be created (required). |
+   |              |                                                               |
+   | value        | The value for the stat (required).                            |
+   |              |                                                               |
+   | ref_id       | Stat can be assigned ref if (optionally).                     |
+   |              |                                                               |
+   | generated_at | Can be assigned generated at time stamp (optionally)          |
+   |              |                                                               |
+   +--------------+---------------------------------------------------------------+
 
 =cut
 
 sub create_stat {
+    my ($self, $params) = @_;
+
+    $params->{format} = $self->format;
+    my $response = $self->post($self->stats_url, [ %$params ]);
+    my $content  = from_json($response->content);
+
+    return WWW::StatsMix::Stat->new($content->{stat});
 }
 
 =head2 update_stat()
@@ -174,7 +194,6 @@ sub create_stat {
 
 sub update_stat {
 }
-
 
 =head2 delete_stat()
 
@@ -188,12 +207,39 @@ sub delete_stat {
 
 =head2 get_stats()
 
-- Show a stat using stat_id (GET)
-- Show a stat using ref_id (GET)
+The method get_stats() will return a default of up to 50  records.  The parameter
+limit  can  be  passed  to specify the number of records to return. The parameter
+metric_id  can also be used to scope records to a particular profile. Parameters
+start_date &  end_date can be used to limit the date range based on the timestamp
+in a stat's generated_at.
+
+   +------------+---------------------------------------------------------------+
+   | Key        | Description                                                   |
+   +------------+---------------------------------------------------------------+
+   | limit      | Limit the number of metrics. Default is 50.                   |
+   |            |                                                               |
+   | metric_id  | Scope the search to a particular metric.                      |
+   |            |                                                               |
+   | start_date | Limit the searh in date range against stats generated_at key. |
+   | / end_date |                                                               |
+   +------------+---------------------------------------------------------------+
 
 =cut
 
 sub get_stats {
+    my ($self, $params) = @_;
+
+    my $url = sprintf("%s?format=%s", $self->stats_url, $self->format);
+    foreach (qw(limit metric_id start_date end_date)) {
+        if (exists $params->{$_}) {
+            $url .= sprintf("&%s=%s", $_, $params->{$_});
+        }
+    }
+
+    my $response = $self->get($url);
+    my $content  = from_json($response->content);
+
+    return _get_stats($content);
 }
 
 # PRIVATE METHODS
@@ -209,6 +255,27 @@ sub _get_metrics {
     }
 
     return $metrics;
+}
+
+sub _get_stats {
+    my ($content) = @_;
+
+    my $stats = [];
+    foreach (@{$content->{stats}->{stat}}) {
+        push @$stats, WWW::StatsMix::Stat->new($_);
+    }
+
+    return $stats;
+}
+
+sub _now_yyyy_mm_dd_hh_mi_ss {
+    my ($sec,$min,$hour,$mday,$mon,$year) = localtime(time);
+    return sprintf("%04d-%02d-%02d %02d:%02d:%02d", $year+=1900, ++$mon, $mday, $hour, $min, $sec);
+}
+
+sub _now_yyyy_mm_dd {
+    my ($sec,$min,$hour,$mday,$mon,$year) = localtime(time);
+    return sprintf("%04d-%02d-%02d", $year+=1900, ++$mon, $mday);
 }
 
 =head1 Author

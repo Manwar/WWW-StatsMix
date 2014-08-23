@@ -3,6 +3,8 @@ package WWW::StatsMix::Stat;
 $WWW::StatsMix::Stat::VERSION = '0.01';
 
 use 5.006;
+use Moo;
+use namespace::clean;
 
 =head1 NAME
 
@@ -12,9 +14,39 @@ WWW::StatsMix::Stat - Placeholder for StatsMix Stat.
 
 Version 0.01
 
+=cut
+
+has id           => (is => 'ro');
+has ref_id       => (is => 'ro');
+has profile_id   => (is => 'ro');
+has metric_id    => (is => 'ro');
+has value        => (is => 'ro');
+has meta         => (is => 'ro');
+has generated_at => (is => 'ro');
+has created_at   => (is => 'ro');
+has updated_at   => (is => 'ro');
+
 =head1 DESCRIPTION
 
 =head1 METHODS
+
+=head2 id()
+
+=head2 ref_id()
+
+=head2 profile_id()
+
+=head2 metric_id()
+
+=head2 value()
+
+=head2 meta()
+
+=head2 generated_at()
+
+=head2 created_at()
+
+=head2 updated_at()
 
 =head1 AUTHOR
 
