@@ -118,6 +118,30 @@ sub update_metric {
     return WWW::StatsMix::Metric->new($content->{metric});
 }
 
+=head2 delete_metric()
+
+Delete the metric. Possible parameters for the method are as below:
+
+   +-----------+----------------------------------------+
+   | Key       | Description                            |
+   +-----------+----------------------------------------+
+   |           |                                        |
+   | metric_id | The metric id that you want to delete. |
+   |           |                                        |
+   +-----------+----------------------------------------+
+
+=cut
+
+sub delete_metric {
+    my ($self, $id) = @_;
+
+    my $url      = sprintf("%s/%d.json", $self->metrics_url, $id);
+    my $response = $self->delete($url);
+    my $content  = from_json($response->content);
+
+    return WWW::StatsMix::Metric->new($content->{metric});
+}
+
 =head2 get_metrics()
 
 The method get_metrics() will return a default of up to 50 records. The parameter
