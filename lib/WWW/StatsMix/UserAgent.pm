@@ -7,7 +7,7 @@ use JSON;
 use Data::Dumper;
 
 use LWP::UserAgent;
-use HTTP::Request::Common qw(POST PUT GET);
+use HTTP::Request::Common qw(POST PUT GET DELETE);
 use WWW::StatsMix::UserAgent::Exception;
 
 use Moo;
@@ -77,6 +77,22 @@ sub post {
     my ($self, $url, $content) = @_;
 
     my $request = POST($url, $content);
+    $request->header("X-StatsMix-Token", $self->api_key);
+
+    return _response($self->ua->request($request));
+}
+
+=head2 delete(<url>)
+
+The method delete() expects one parameter URL and returns the  standard response.
+On error throws exception of type L<WWW::StatsMix::UserAgent::Exception>.
+
+=cut
+
+sub delete {
+    my ($self, $url) = @_;
+
+    my $request = DELETE($url);
     $request->header("X-StatsMix-Token", $self->api_key);
 
     return _response($self->ua->request($request));

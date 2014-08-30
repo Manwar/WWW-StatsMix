@@ -25,16 +25,17 @@ WriteMakefile(
         'LWP::UserAgent'        => 0,
         'HTTP::Request::Common' => 0,
     },
-    META_MERGE => {
+    dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
+    clean => { FILES => 'WWW-StatsMix-*' },
+    (eval { ExtUtils::MakeMaker->VERSION(6.46) } ? (META_MERGE => {
         'meta-spec' => { version => 2 },
-        resources   => {
+        resources => {
             repository => {
                 type => 'git',
                 url  => 'https://github.com/Manwar/WWW-StatsMix.git',
                 web  => 'https://github.com/Manwar/WWW-StatsMix',
             },
-        },
-    },
-    dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
-    clean => { FILES => 'WWW-StatsMix-*' },
+        }})
+     : ()
+    ),
 );
