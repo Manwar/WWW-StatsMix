@@ -271,12 +271,30 @@ sub update_stat {
 
 =head2 delete_stat()
 
-- Delete stat using stat_id (GET)
-- Delete stat using ref_id (GET)
+Delete the stat of the metric.Stat can be located by stat id or ref id.Parameters
+for the method are as below:
+
+   +-----------+-------------------------------------+
+   | Key       | Description                         |
+   +-----------+-------------------------------------+
+   | metric_id | The id of the metric (required).    |
+   |           |                                     |
+   | id        | The stat id of the stat (optional). |
+   |           |                                     |
+   | ref_id    | Ref id of the stat (optional).      |
+   +-----------+-------------------------------------+
 
 =cut
 
 sub delete_stat {
+    my ($self, $metric, $params) = @_;
+
+    my $id       = _get_id($params);
+    my $url      = sprintf("%s/%d.json?metric_id=%d", $self->stats_url, $id, $metric);
+    my $response = $self->delete($url);
+    my $content  = from_json($response->content);
+
+    return WWW::StatsMix::Stat->new($content->{stat});
 }
 
 =head2 get_stats()
