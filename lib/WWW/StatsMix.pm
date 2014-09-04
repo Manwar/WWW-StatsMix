@@ -209,6 +209,44 @@ sub create_stat {
     return WWW::StatsMix::Stat->new($content->{stat});
 }
 
+=head2 get_stat()
+
+Get the stat of the metric. Stat can be located by stat id or ref id.  parameters
+for the method are as below:
+
+   +-----------+-------------------------------------+
+   | Key       | Description                         |
+   +-----------+-------------------------------------+
+   | metric_id | The id of the metric (required).    |
+   |           |                                     |
+   | id        | The stat id of the stat (optional). |
+   |           |                                     |
+   | ref_id    | Ref id of the stat (optional).      |
+   +-----------+-------------------------------------+
+
+=cut
+
+sub get_stat {
+    my ($self, $metric, $params) = @_;
+
+    my ($id);
+    if (exists $params->{id}) {
+        $id = $params->{id};
+    }
+    elsif (exists $params->{ref_id}) {
+        $id = $params->{ref_id};
+    }
+    else {
+        die "Missing required key id/ref_id";
+    }
+
+    my $url      = sprintf("%s/%d.json?metric_id=%d", $self->stats_url, $id, $metric);
+    my $response = $self->get($url);
+    my $content  = from_json($response->content);
+
+    return WWW::StatsMix::Stat->new($content->{stat});
+}
+
 =head2 update_stat()
 
 - Update stat using stat_id (GET)
