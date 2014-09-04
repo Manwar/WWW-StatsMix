@@ -229,17 +229,7 @@ for the method are as below:
 sub get_stat {
     my ($self, $metric, $params) = @_;
 
-    my ($id);
-    if (exists $params->{id}) {
-        $id = $params->{id};
-    }
-    elsif (exists $params->{ref_id}) {
-        $id = $params->{ref_id};
-    }
-    else {
-        die "Missing required key id/ref_id";
-    }
-
+    my $id       = _get_id($params);
     my $url      = sprintf("%s/%d.json?metric_id=%d", $self->stats_url, $id, $metric);
     my $response = $self->get($url);
     my $content  = from_json($response->content);
@@ -249,12 +239,34 @@ sub get_stat {
 
 =head2 update_stat()
 
-- Update stat using stat_id (GET)
-- Update stat using ref_id (GET)
+Update the stat of the metric.Stat can be located by stat id or ref id.Parameters
+for the method are as below:
+
+   +-----------+-------------------------------------+
+   | Key       | Description                         |
+   +-----------+-------------------------------------+
+   | metric_id | The id of the metric (required).    |
+   |           |                                     |
+   | value     | The stat value (required).          |
+   |           |                                     |
+   | id        | The stat id of the stat (optional). |
+   |           |                                     |
+   | ref_id    | Ref id of the stat (optional).      |
+   +-----------+-------------------------------------+
 
 =cut
 
 sub update_stat {
+    my ($self, $metric, $params) = @_;
+
+    my $id       = _get_id($params);
+    my $value    = _get_value($params);
+    my $data     = { metric_id => $metric, value => $value };
+    my $url      = sprintf("%s/%d.json", $self->stats_url, $id);
+    my $response = $self->put($url, [ %$data ]);
+    my $content  = from_json($response->content);
+
+    return WWW::StatsMix::Stat->new($content->{stat});
 }
 
 =head2 delete_stat()
@@ -307,6 +319,30 @@ sub get_stats {
 # PRIVATE METHODS
 #
 #
+
+sub _get_id {
+    my ($params) = @_;
+
+    if (defined $params) {
+        if (exists $params->{id}) {
+            return $params->{id};
+        }
+        elsif (exists $params->{ref_id}) {
+            return $params->{ref_id};
+        }
+    }
+
+    die "Missing required key id/ref_id";
+}
+
+sub _get_value {
+    my ($params) = @_;
+
+    return $params->{value}
+        if (defined $params && exists $params->{value});
+
+    die "Missing required key id/ref_id";
+}
 
 sub _get_metrics {
     my ($content) = @_;
