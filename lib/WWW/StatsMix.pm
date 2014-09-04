@@ -334,6 +334,47 @@ sub get_stats {
     return _get_stats($content);
 }
 
+=head2 track()
+
+It combines the functions create_stat() and create_metric() (if necessary) into a
+single method call. If no value is passed, the default of 1 is returned.
+
+   +--------------+----------------------------------------------------------------------------+
+   | Key          | Description                                                                |
+   +--------------+----------------------------------------------------------------------------+
+   | name         | The name of the metric you are tracking. If a metric with that name does   |
+   |              | not exist in your account, one will be created automatically. (required)   |
+   |              |                                                                            |
+   | value        | The numeric value of the stat with a decimal precision of two. Decimal (up |
+   |              | to 11 digits on the left side of the decimal point, two on the right).     |
+   |              |                                                                            |
+   | generated_at | Datetime for the stat. If not set, defaults to the current timestamp. This |
+   |              | is the datetime to be used in the charts.                                  |
+   |              |                                                                            |
+   | meta         | Metadata in JSON format about anything associated with the stat. Invalid   |
+   |              | JSON will result in a 422 error.                                           |
+   |              |                                                                            |
+   | ref_id       | Optional reference id for a stat. If a stat already exists for the named   |
+   |              | metric and the given ref_id, the value (and optionally generated_at and    |
+   |              | meta) will be updated instead of created.                                  |
+   |              |                                                                            |
+   | profile_id   | The unique id of the profile this stat belongs to. If not set, the metric  |
+   |              | will use the first profile_id created in your account. (Developer, Basic,  |
+   |              | and Standard plans only have one profile.)                                 |
+   +--------------+----------------------------------------------------------------------------+
+
+=cut
+
+sub track {
+    my ($self, $params) = @_;
+
+    $params->{format} = $self->format;
+    my $response = $self->post($self->track_url, [ %$params ]);
+    my $content  = from_json($response->content);
+
+    return WWW::StatsMix::Stat->new($content->{stat});
+}
+
 # PRIVATE METHODS
 #
 #
