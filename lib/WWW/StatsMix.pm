@@ -31,17 +31,25 @@ has track_url   => (is => 'ro', default => sub { return 'http://api.statsmix.com
 
 =head1 DESCRIPTION
 
-L<WWW::StatsMix> provides suite to to track, chart,  and share all your important
-metrics. The API is part of Copper.io - a full stact set of developer tools.  For
-more details about the API L<click here|http://www.statsmix.com/developers/documentation>.
+StatsMix provides an API that can be used to create, retrieve, update, and delete
+metrics and stats resources. The API is built using RESTful principles.
+
+The current version is 2.0.
+
+To get an API key, you can sign up for a free Developer account L<here|http://www.statsmix.com/try?plan=developer>.
+
+If you go over the number of API requests available to your account, the API will
+return a 403 Forbidden error and an explanation. The number of API  requests  and
+profiles  you  can  create is based on the type of account you have. For example,
+Standard plans are limited to 300,000 API requests per month.
 
 =head1 SYNOPSIS
 
-    use strict; use warnings;
+    Use Strict; use warnings;
     use WWW::StatsMix;
 
     my $API_KEY = "Your API Key";
-    my $api = WWW::StatsMix->new(api_key => $API_KEY);
+    my $api     = WWW::StatsMix->new(api_key => $API_KEY);
 
     my $metric_1 = $api->create_metric({ name => "Testing - 1" });
     my $metric_2 = $api->create_metric({ name => "Testing - 2", include_in_email => 0 });
@@ -52,9 +60,10 @@ more details about the API L<click here|http://www.statsmix.com/developers/docum
 
 =head1 METHODS
 
-=head2 create_metric()
+=head2 create_metric(params)
 
-Creates new metric. Possible parameters for the method are as below:
+It creates new metric and returns the object of type L<WWW::StatsMix::Metric>.The
+possible parameters for the method are as below:
 
    +------------------+-----------------------------------------------------------------------+
    | Key              | Description                                                           |
@@ -73,10 +82,21 @@ Creates new metric. Possible parameters for the method are as below:
    |                  | to "public").                                                         |
    +------------------+-----------------------------------------------------------------------+
 
+   use strict; use warnings;
+   use WWW::StatsMix;
+
+   my $API_KEY = "Your_API_Key";
+   my $api     = WWW::StatsMix->new(api_key => $API_KEY);
+   my $metric  = $api->create_metric({ name => "Testing API - 2" });
+
+   print "Id: ", $metric->id, "\n";
+
 =cut
 
 sub create_metric {
     my ($self, $params) = @_;
+
+    die "ERROR: Missing the required parameters." unless defined $params;
 
     $params->{format} = $self->format;
     my $response = $self->post($self->metrics_url, [ %$params ]);
@@ -85,16 +105,15 @@ sub create_metric {
     return WWW::StatsMix::Metric->new($content->{metric});
 }
 
-=head2 update_metric()
+=head2 update_metric(metric_id, params)
 
-Updates the metric. Possible parameters for the method are as below:
+It updates the metric and returns the object of type <WWW::StatsMix::Metric>. The
+possible parameters for the method are as below:
 
    +------------------+-----------------------------------------------------------------------+
    | Key              | Description                                                           |
    +------------------+-----------------------------------------------------------------------+
    | name             | The name of the metric. Metric names must be unique within a profile. |
-   |                  |                                                                       |
-   | profile_id       | The profile the metric belongs in.                                    |
    |                  |                                                                       |
    | sharing          | Sharing status for the metric. Either "public" (unauthenticated users |
    |                  | can view the metric at the specific URL) or "none" (default).         |
@@ -106,10 +125,23 @@ Updates the metric. Possible parameters for the method are as below:
    |                  | to "public").                                                         |
    +------------------+-----------------------------------------------------------------------+
 
+   use strict; use warnings;
+   use WWW::StatsMix;
+
+   my $API_KEY   = "Your_API_Key";
+   my $api       = WWW::StatsMix->new(api_key => $API_KEY);
+   my $metric_id = <your_metric_id>;
+   my $metric    = $api->update_metric($metric_id, { name => "Testing API - new" });
+
+   print "Name: ", $metric->name, "\n";
+
 =cut
 
 sub update_metric {
     my ($self, $id, $params) = @_;
+
+    die "ERROR: Missing the required metric id."  unless defined $id;
+    die "ERROR: Missing the required parameters." unless defined $params;
 
     my $url      = sprintf("%s/%d.json", $self->metrics_url, $id);
     my $response = $self->put($url, [ %$params ]);
@@ -118,9 +150,9 @@ sub update_metric {
     return WWW::StatsMix::Metric->new($content->{metric});
 }
 
-=head2 delete_metric()
+=head2 delete_metric(metric_id)
 
-Delete the metric. Possible parameters for the method are as below:
+It deletes the metric and returns the object of type <WWW::StatsMix::Metric>.
 
    +-----------+----------------------------------------+
    | Key       | Description                            |
@@ -130,10 +162,22 @@ Delete the metric. Possible parameters for the method are as below:
    |           |                                        |
    +-----------+----------------------------------------+
 
+   use strict; use warnings;
+   use WWW::StatsMix;
+
+   my $API_KEY   = "Your_API_Key";
+   my $api       = WWW::StatsMix->new(api_key => $API_KEY);
+   my $metric_id = <your_metric_id>;
+   my $metric    = $api->delete_metric($metric_id);
+
+   print "Name: ", $metric->name, "\n";
+
 =cut
 
 sub delete_metric {
     my ($self, $id) = @_;
+
+    die "ERROR: Missing the required metric id." unless defined $id;
 
     my $url      = sprintf("%s/%d.json", $self->metrics_url, $id);
     my $response = $self->delete($url);
@@ -142,13 +186,14 @@ sub delete_metric {
     return WWW::StatsMix::Metric->new($content->{metric});
 }
 
-=head2 get_metrics()
+=head2 get_metrics(params)
 
 The method get_metrics() will return a default of up to 50 records. The parameter
 limit  can  be  passed  to specify the number of records to return. The parameter
 profile_id  can also be used to scope records to a particular profile. Parameters
 start_date &  end_date can be used to limit the date range based on the timestamp
 in a stat's generated_at.
+The result of the call is reference to list of L<WWW::StatsMix::Metric> objects.
 
    +------------+---------------------------------------------------------------+
    | Key        | Description                                                   |
@@ -158,8 +203,20 @@ in a stat's generated_at.
    | profile_id | Scope the search to a particular profile.                     |
    |            |                                                               |
    | start_date | Limit the searh in date range against stats generated_at key. |
-   | / end_date |                                                               |
+   | / end_date | Valid format is YYYY-MM-DD.                                   |
    +------------+---------------------------------------------------------------+
+
+   use strict; use warnings;
+   use WWW::StatsMix;
+
+   my $API_KEY    = "Your_API_Key";
+   my $api        = WWW::StatsMix->new(api_key => $API_KEY);
+   my $profile_id = <your_profile_id>;
+   my $limit      = <your_limit_count>;
+
+   my $metrics_all        = $api->get_metrics;
+   my $metrics_by_limit   = $api->get_metrics({ limit      => $limit      });
+   my $metrics_by_profile = $api->get_metrics({ profile_id => $profile_id });
 
 =cut
 
@@ -167,9 +224,24 @@ sub get_metrics {
     my ($self, $params) = @_;
 
     my $url = sprintf("%s?format=%s", $self->metrics_url, $self->format);
-    foreach (qw(limit profile_id start_date end_date)) {
-        if (exists $params->{$_}) {
-            $url .= sprintf("&%s=%s", $_, $params->{$_});
+    if (defined $params && (ref($params) eq 'HASH')) {
+        if (exists $params->{start_date} && defined $params->{start_date}) {
+            die "ERROR: Missing param key 'end_date'."
+                unless (exists $params->{end_date} && defined $params->{end_date});
+            die "ERROR: Invalid param key 'start_date'."
+                unless _is_valid_date($params->{start_date});
+            die "ERROR: Invalid param key 'end_date'."
+                unless _is_valid_date($params->{end_date});
+        }
+        elsif (exists $params->{end_date} && defined $params->{end_date}) {
+            die "ERROR: Missing param key 'start_date'."
+                unless (exists $params->{start_date} && defined $params->{start_date});
+        }
+
+        foreach (qw(limit profile_id start_date end_date)) {
+            if (exists $params->{$_} && defined $params->{$_}) {
+                $url .= sprintf("&%s=%s", $_, $params->{$_});
+            }
         }
     }
 
@@ -179,40 +251,79 @@ sub get_metrics {
     return _get_metrics($content);
 }
 
-=head2 create_stat()
+=head2 create_stat(params)
 
 The  method  create_stat() creates stat for the given metric. You can also create
-stat with ref_id.
+stat with ref_id. It returns an object of type L<WWW::StatsMix::Stat>.
 
-   +--------------+---------------------------------------------------------------+
-   | Key          | Description                                                   |
-   +--------------+---------------------------------------------------------------+
-   | metric_id    | The metric id for which the stat would be created (required). |
-   |              |                                                               |
-   | value        | The value for the stat (required).                            |
-   |              |                                                               |
-   | ref_id       | Stat can be assigned ref if (optionally).                     |
-   |              |                                                               |
-   | generated_at | Can be assigned generated at time stamp (optionally)          |
-   |              |                                                               |
-   +--------------+---------------------------------------------------------------+
+   +--------------+----------------------------------------------------------------------------+
+   | Key          | Description                                                                |
+   +--------------+----------------------------------------------------------------------------+
+   | metric_id    | The metric id for which the stat would be created.                         |
+   | (required)   |                                                                            |
+   |              |                                                                            |
+   | value        | The numeric value of the stat with a decimal precision of two. Decimal (up |
+   | (required)   | to 11 digits on the left side of the decimal point, two on the right).     |
+   |              |                                                                            |
+   | generated_at | Datetime for the stat. If not set, defaults to the current timestamp. This |
+   |              | is the datetime to be used in the charts. Valid format is YYYY-MM-DD.      |
+   |              |                                                                            |
+   | meta         | hashref data (key,value pair) about anything associated with the stat.     |
+   |              |                                                                            |
+   | ref_id       | Optional reference id for a stat. If a stat already exists for the named   |
+   |              | metric and the given ref_id, the value (and optionally generated_at and    |
+   |              | meta) will be updated instead of created.                                  |
+   |              |                                                                            |
+   +--------------+----------------------------------------------------------------------------+
+
+   use strict; use warnings;
+   use WWW::StatsMix;
+
+   my $API_KEY   = "Your_API_Key";
+   my $api       = WWW::StatsMix->new(api_key => $API_KEY);
+   my $metric_id = <your_metric_id>;
+   my $value     = <your_new_stat_value>;
+   my $params    = { metric_id => $metric_id, value => $value };
+   my $stat      = $api->create_stat($params);
+
+   print "Id: ", $stat->id, "\n";
 
 =cut
 
 sub create_stat {
     my ($self, $params) = @_;
 
-    $params->{format} = $self->format;
-    my $response = $self->post($self->stats_url, [ %$params ]);
+    die "ERROR: Missing the required parameters."
+        unless (defined $params && (ref($params) eq 'HASH'));
+
+    my $data = {};
+    foreach (qw(metric_id value)) {
+        die "ERROR: Required key '$_' is missing/undefined."
+            unless (exists $params->{$_} && defined $params->{$_});
+        $data->{$_} = $params->{$_};
+    }
+    foreach (qw(meta generated_at ref_id)) {
+        $data->{$_} = $params->{$_}
+            if (exists $params->{$_} && defined $params->{$_});
+    }
+
+    if (exists $data->{meta} && defined $data->{meta}) {
+        die "ERROR: Invalid data format for key 'meta'."
+            unless (ref($data->{meta}) eq 'HASH');
+        $data->{meta} = to_json($data->{meta});
+    }
+
+    $data->{format} = $self->format;
+    my $response = $self->post($self->stats_url, [ %$data ]);
     my $content  = from_json($response->content);
 
     return WWW::StatsMix::Stat->new($content->{stat});
 }
 
-=head2 get_stat()
+=head2 get_stat(metric_id, params)
 
-Get the stat of the metric. Stat can be located by stat id or ref id.  parameters
-for the method are as below:
+Returns the stat details of the given stat of the metric. The stat can  be either
+search by stat id or ref id. The return data is of type L<WWW::StatsMix::Stat>.
 
    +-----------+-------------------------------------+
    | Key       | Description                         |
@@ -224,10 +335,30 @@ for the method are as below:
    | ref_id    | Ref id of the stat (optional).      |
    +-----------+-------------------------------------+
 
+   use strict; use warnings;
+   use WWW::StatsMix;
+
+   my $API_KEY     = "Your_API_Key";
+   my $api         = WWW::StatsMix->new(api_key => $API_KEY);
+   my $metric_id   = <your_metric_id>;
+   my $stat_id     = <your_metric_stat_id>;
+   my $stat_ref_id = <your_metric_stat_ref_id>;
+
+   my $stat_by_id     = $api->get_stat($metric_id, { id     => $stat_id     });
+   my $stat_by_ref_id = $api->get_stat($metric_id, { ref_id => $stat_ref_id });
+
+   print "Stat by Id (name)    : ", $stat_by_id->name,     "\n";
+   print "Stat by Ref Id (name): ", $stat_by_ref_id->name, "\n";
+
 =cut
 
 sub get_stat {
     my ($self, $metric, $params) = @_;
+
+    die "ERROR: Missing the required key metric id." unless defined $metric;
+
+    die "ERROR: Missing the required parameters."
+        unless (defined $params && (ref($params) eq 'HASH'));
 
     my $id       = _get_id($params);
     my $url      = sprintf("%s/%d.json?metric_id=%d", $self->stats_url, $id, $metric);
@@ -237,27 +368,47 @@ sub get_stat {
     return WWW::StatsMix::Stat->new($content->{stat});
 }
 
-=head2 update_stat()
+=head2 update_stat(metric_id, params)
 
 Update the stat of the metric.Stat can be located by stat id or ref id.Parameters
-for the method are as below:
+for the method are as below. The return data is of type L<WWW::StatsMix::Stat>.
 
-   +-----------+-------------------------------------+
-   | Key       | Description                         |
-   +-----------+-------------------------------------+
-   | metric_id | The id of the metric (required).    |
-   |           |                                     |
-   | value     | The stat value (required).          |
-   |           |                                     |
-   | id        | The stat id of the stat (optional). |
-   |           |                                     |
-   | ref_id    | Ref id of the stat (optional).      |
-   +-----------+-------------------------------------+
+   +------------+----------------------------------------------------------------------------+
+   | Key        | Description                                                                |
+   +------------+----------------------------------------------------------------------------+
+   | metric_id  | The id of the metric.                                                      |
+   | (required) |                                                                            |
+   |            |                                                                            |
+   | value      | The numeric value of the stat with a decimal precision of two. Decimal (up |
+   | (required) | to 11 digits on the left side of the decimal point, two on the right).     |
+   |            |                                                                            |
+   | id         | The stat id of the stat (optional).                                        |
+   |            |                                                                            |
+   | ref_id     | Ref id of the stat (optional).                                             |
+   +------------+----------------------------------------------------------------------------+
+
+   use strict; use warnings;
+   use WWW::StatsMix;
+
+   my $API_KEY     = "Your_API_Key";
+   my $api         = WWW::StatsMix->new(api_key => $API_KEY);
+   my $metric_id   = <your_metric_id>;
+   my $value       = <your_stat_new_value>;
+   my $stat_id     = <your_metric_stat_id>;
+   my $stat_ref_id = <your_metric_stat_ref_id>;
+
+   my $stat_by_id     = $api->update_stat($metric_id, { id     => $stat_id,     value => $value });
+   my $stat_by_ref_id = $api->update_stat($metric_id, { ref_id => $stat_ref_id, value => $value });
+
+   print "Stat by Id (value)    : ", $stat_by_id->value,     "\n";
+   print "Stat by Ref Id (value): ", $stat_by_ref_id->value, "\n";
 
 =cut
 
 sub update_stat {
     my ($self, $metric, $params) = @_;
+
+    die "ERROR: Missing the required metric id." unless defined $metric;
 
     my $id       = _get_id($params);
     my $value    = _get_value($params);
@@ -269,10 +420,10 @@ sub update_stat {
     return WWW::StatsMix::Stat->new($content->{stat});
 }
 
-=head2 delete_stat()
+=head2 delete_stat(metric_id, params)
 
 Delete the stat of the metric.Stat can be located by stat id or ref id.Parameters
-for the method are as below:
+for the method are as below. The return data is of type L<WWW::StatsMix::Stat>.
 
    +-----------+-------------------------------------+
    | Key       | Description                         |
@@ -284,10 +435,24 @@ for the method are as below:
    | ref_id    | Ref id of the stat (optional).      |
    +-----------+-------------------------------------+
 
+   use strict; use warnings;
+   use WWW::StatsMix;
+
+   my $API_KEY     = "Your_API_Key";
+   my $api         = WWW::StatsMix->new(api_key => $API_KEY);
+   my $metric_id   = <your_metric_id>;
+   my $stat_id     = <your_metric_stat_id>;
+   my $stat_ref_id = <your_metric_stat_ref_id>;
+
+   my $stat_by_id     = $api->delete_stat($metric_id, { id     => $stat_id     });
+   my $stat_by_ref_id = $api->delete_stat($metric_id, { ref_id => $stat_ref_id });
+
 =cut
 
 sub delete_stat {
     my ($self, $metric, $params) = @_;
+
+    die "ERROR: Missing the required metric id." unless defined $metric;
 
     my $id       = _get_id($params);
     my $url      = sprintf("%s/%d.json?metric_id=%d", $self->stats_url, $id, $metric);
@@ -297,7 +462,7 @@ sub delete_stat {
     return WWW::StatsMix::Stat->new($content->{stat});
 }
 
-=head2 get_stats()
+=head2 get_stats(params)
 
 The method get_stats() will return a default of up to 50  records.  The parameter
 limit  can  be  passed  to specify the number of records to return. The parameter
@@ -313,8 +478,20 @@ in a stat's generated_at.
    | metric_id  | Scope the search to a particular metric.                      |
    |            |                                                               |
    | start_date | Limit the searh in date range against stats generated_at key. |
-   | / end_date |                                                               |
+   | / end_date | Valid format is YYYY-MM-DD.                                   |
    +------------+---------------------------------------------------------------+
+
+   use strict; use warnings;
+   use WWW::StatsMix;
+
+   my $API_KEY   = "Your_API_Key";
+   my $api       = WWW::StatsMix->new(api_key => $API_KEY);
+   my $metric_id = <your_metric_id>;
+   my $limit     = <your_limit_count>;
+
+   my $stats = $api->get_stats();
+   my $stats_by_metric = $api->get_stats({ metric_id => $metric_id });
+   my $stats_by_metric_by_limit = $api->get_stats({ metric_id => $metric_id, limit => $limit });
 
 =cut
 
@@ -322,9 +499,24 @@ sub get_stats {
     my ($self, $params) = @_;
 
     my $url = sprintf("%s?format=%s", $self->stats_url, $self->format);
-    foreach (qw(limit metric_id start_date end_date)) {
-        if (exists $params->{$_}) {
-            $url .= sprintf("&%s=%s", $_, $params->{$_});
+    if (defined $params && (ref($params) eq 'HASH')) {
+        if (exists $params->{start_date} && defined $params->{start_date}) {
+            die "ERROR: Missing param key 'end_date'."
+                unless (exists $params->{end_date} && defined $params->{end_date});
+            die "ERROR: Invalid param key 'start_date'."
+                unless _is_valid_date($params->{start_date});
+            die "ERROR: Invalid param key 'end_date'."
+                unless _is_valid_date($params->{end_date});
+        }
+        elsif (exists $params->{end_date} && defined $params->{end_date}) {
+            die "ERROR: Missing param key 'start_date'."
+                unless (exists $params->{start_date} && defined $params->{start_date});
+        }
+
+        foreach (qw(limit metric_id start_date end_date)) {
+            if (exists $params->{$_} && defined $params->{$_}) {
+                $url .= sprintf("&%s=%s", $_, $params->{$_});
+            }
         }
     }
 
@@ -334,25 +526,26 @@ sub get_stats {
     return _get_stats($content);
 }
 
-=head2 track()
+=head2 track(params)
 
 It combines the functions create_stat() and create_metric() (if necessary) into a
-single method call. If no value is passed, the default of 1 is returned.
+single method call. If no value is passed, the default of 1 is returned.  Returns
+an object of type L<WWW::StatsMix::Stat>.
 
    +--------------+----------------------------------------------------------------------------+
    | Key          | Description                                                                |
    +--------------+----------------------------------------------------------------------------+
    | name         | The name of the metric you are tracking. If a metric with that name does   |
-   |              | not exist in your account, one will be created automatically. (required)   |
+   | (required)   | not exist in your account, one will be created automatically.              |
    |              |                                                                            |
    | value        | The numeric value of the stat with a decimal precision of two. Decimal (up |
-   |              | to 11 digits on the left side of the decimal point, two on the right).     |
+   |              | to 11 digits on the left side of the decimal point, two on the right). If  |
+   |              | missing default value 1 is assigned.                                       |
    |              |                                                                            |
    | generated_at | Datetime for the stat. If not set, defaults to the current timestamp. This |
-   |              | is the datetime to be used in the charts.                                  |
+   |              | is the datetime to be used in the charts. Valid format is YYYY-MM-DD.      |
    |              |                                                                            |
-   | meta         | Metadata in JSON format about anything associated with the stat. Invalid   |
-   |              | JSON will result in a 422 error.                                           |
+   | meta         | hashref data (key,value pair) about anything associated with the stat.     |
    |              |                                                                            |
    | ref_id       | Optional reference id for a stat. If a stat already exists for the named   |
    |              | metric and the given ref_id, the value (and optionally generated_at and    |
@@ -363,13 +556,47 @@ single method call. If no value is passed, the default of 1 is returned.
    |              | and Standard plans only have one profile.)                                 |
    +--------------+----------------------------------------------------------------------------+
 
+   use strict; use warnings;
+   use WWW::StatsMix;
+
+   my $API_KEY = "Your_API_Key";
+   my $api     = WWW::StatsMix->new(api_key => $API_KEY);
+   my $name    = <your_metric_name>;
+   my $params  = { name => $metric_name };
+   my $stat    = $api->track($params);
+
+   print "Id: ", $stat->id, "\n";
+
 =cut
 
 sub track {
     my ($self, $params) = @_;
 
-    $params->{format} = $self->format;
-    my $response = $self->post($self->track_url, [ %$params ]);
+    die "ERROR: Missing the required parameters."
+        unless (defined $params && (ref($params) eq 'HASH'));
+
+    die "ERROR: Required key 'name' is missing/undefined."
+        unless (exists $params->{name} && defined $params->{name});
+
+    my $data = { name => $params->{name} };
+    foreach (qw(value meta generated_at ref_id profile_id)) {
+        $data->{$_} = $params->{$_}
+            if (exists $params->{$_} && defined $params->{$_});
+    }
+
+    if (exists $data->{meta} && defined $data->{meta}) {
+        die "ERROR: Invalid data format for key 'meta'."
+            unless (ref($data->{meta}) eq 'HASH');
+        $data->{meta} = to_json($data->{meta});
+    }
+
+    if (exists $data->{generated_at} && defined $data->{generated_at}) {
+        die "ERROR: Invalid data for key 'generated_at'."
+            unless _is_valid_date($data->{generated_at});
+    }
+
+    $data->{format} = $self->format;
+    my $response = $self->post($self->track_url, [ %$data ]);
     my $content  = from_json($response->content);
 
     return WWW::StatsMix::Stat->new($content->{stat});
@@ -391,16 +618,16 @@ sub _get_id {
         }
     }
 
-    die "Missing required key id/ref_id";
+    die "ERROR: Missing required key id/ref_id";
 }
 
 sub _get_value {
     my ($params) = @_;
 
     return $params->{value}
-        if (defined $params && exists $params->{value});
+        if (defined $params && exists $params->{value} && defined $params->{value});
 
-    die "Missing required key id/ref_id";
+    die "ERROR: Missing required key 'value'.";
 }
 
 sub _get_metrics {
@@ -433,6 +660,25 @@ sub _now_yyyy_mm_dd_hh_mi_ss {
 sub _now_yyyy_mm_dd {
     my ($sec,$min,$hour,$mday,$mon,$year) = localtime(time);
     return sprintf("%04d-%02d-%02d", $year+=1900, ++$mon, $mday);
+}
+
+sub _is_valid_date {
+    my ($date) = @_;
+
+    if ($date =~ m!^((?:19|20)\d\d)\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$!) {
+        # At this point, $1 holds the year, $2 the month and $3 the day of the date entered
+        if ($3 == 31 and ($2 == 4 or $2 == 6 or $2 == 9 or $2 == 11)) {
+            return 0; # 31st of a month with 30 days
+        } elsif ($3 >= 30 and $2 == 2) {
+            return 0; # February 30th or 31st
+        } elsif ($2 == 2 and $3 == 29 and not ($1 % 4 == 0 and ($1 % 100 != 0 or $1 % 400 == 0))) {
+            return 0; # February 29th outside a leap year
+        } else {
+            return 1; # Valid date
+        }
+    } else {
+        return 0; # Not a date
+    }
 }
 
 =head1 Author
