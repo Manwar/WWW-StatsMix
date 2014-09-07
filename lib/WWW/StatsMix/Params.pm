@@ -10,7 +10,7 @@ use vars qw(@ISA @EXPORT @EXPORT_OK);
 
 require Exporter;
 @ISA = qw(Exporter);
-@EXPORT_OK = qw(validate $Sharing $ZeroOrOne $FIELDS);
+@EXPORT_OK = qw(validate $FIELDS);
 
 =head1 NAME
 
@@ -22,9 +22,20 @@ Version 0.01
 
 =cut
 
-our $SHARING = { public => 1, none => 1 };
+our $SHARING   = { public => 1, none => 1 };
 
-our $Sharing = sub { check_sharing($_[0]) };
+our $Sharing   = sub { check_sharing($_[0])     };
+
+our $XmlOrJson = sub { check_format($_[0])      };
+
+our $ZeroOrOne = sub { check_zero_or_one($_[0]) };
+
+sub check_format {
+    my ($str) = @_;
+
+    die "ERROR: Invalid data found [$str]"
+        unless (defined($str) || ($str =~ m(^\bjson\b|\bxml\b$)i))
+}
 
 sub check_sharing {
     my ($str) = @_;
@@ -33,7 +44,7 @@ sub check_sharing {
         unless (defined $str && exists $SHARING->{$str});
 };
 
-our $ZeroOrOne = sub { check_zero_or_one($_[0] };
+
 
 sub check_zero_or_one {
     my ($str) = @_;
@@ -56,9 +67,66 @@ sub check_str {
         if (defined $str && $str =~ /^\d+$/);
 };
 
+sub check_date {
+    my ($str) = @_;
+
+    if ($str =~ m!^((?:19|20)\d\d)\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$!) {
+        # At this point, $1 holds the year, $2 the month and $3 the day of the date entered
+        if ($3 == 31 and ($2 == 4 or $2 == 6 or $2 == 9 or $2 == 11)) {
+            # 31st of a month with 30 days
+            die "ERROR: Invalid data of type 'date' found [$str]"
+        } elsif ($3 >= 30 and $2 == 2) {
+            # February 30th or 31st
+            die "ERROR: Invalid data of type 'date' found [$str]"
+        } elsif ($2 == 2 and $3 == 29 and not ($1 % 4 == 0 and ($1 % 100 != 0 or $1 % 400 == 0))) {
+            # February 29th outside a leap year
+            die "ERROR: Invalid data of type 'date' found [$str]"
+        } else {
+            return 1; # Valid date
+        }
+    } else {
+        # Not a date
+        die "ERROR: Invalid data of type 'date' found [$str]"
+    }
+}
+
+sub check_url {
+    my ($str) = @_;
+
+    die "ERROR: Invalid data type 'url' found [$str]"
+        unless (defined $str
+                && $str =~ /^(http(?:s)?\:\/\/[a-zA-Z0-9\-]+(?:\.[a-zA-Z0-9\-]+)*\.[a-zA-Z]{2,6}(?:\/?|(?:\/[\w\-]+)*)(?:\/?|\/\w+\.[a-zA-Z]{2,4}(?:\?[\w]+\=[\w\-]+)?)?(?:\&[\w]+\=[\w\-]+)*)$/);
+};
+
+sub check_value {
+    my ($str) = @_;
+
+    die "ERROR: Invalid data type 'value' found [$str]."
+        unless (defined $str && $str =~ /^\d{0,11}\.?\d{0,2}$/);
+}
+
+sub check_hash_ref {
+    my ($str) = @_;
+
+    return (defined $str && (ref($str) eq 'HASH'));
+}
+
 our $FIELDS = {
-    'ref_id'     => { check => sub { check_str(@_)      }, type => 's' },
-    'profile_id' => { check => sub { check_num(@_)      }, type => 'd' },
+    'id'               => { check => sub { check_num(@_)         }, type => 'd' },
+    'ref_id'           => { check => sub { check_str(@_)         }, type => 's' },
+    'profile_id'       => { check => sub { check_num(@_)         }, type => 'd' },
+    'metric_id'        => { check => sub { check_num(@_)         }, type => 'd' },
+    'limit'            => { check => sub { check_num(@_)         }, type => 'd' },
+    'value'            => { check => sub { check_value(@_)       }, type => 'd' },
+    'name'             => { check => sub { check_str(@_)         }, type => 's' },
+    'sharing'          => { check => sub { check_sharing(@_)     }, type => 's' },
+    'include_in_email' => { check => sub { check_zero_or_one(@_) }, type => 'd' },
+    'format'           => { check => sub { check_format(@_)      }, type => 's' },
+    'url'              => { check => sub { check_url(@_)         }, type => 's' },
+    'meta'             => { check => sub { check_hash_ref(@_)    }, type => 's' },
+    'generated_at'     => { check => sub { check_date(@_)        }, type => 's' },
+    'start_date'       => { check => sub { check_date(@_)        }, type => 's' },
+    'end_date'         => { check => sub { check_date(@_)        }, type => 's' },
 };
 
 sub validate {
@@ -68,18 +136,27 @@ sub validate {
 
     die "ERROR: Parameters have to be hash ref" unless (ref($values) eq 'HASH');
 
-    foreach my $field (keys %{$fields}) {
+    my $keys = [];
+    foreach my $row (@$fields) {
+        my $field    = $row->{key};
+        my $required = $row->{required};
+        push @$keys, $field;
+
         die "ERROR: Received invalid param: $field"
             unless (exists $FIELDS->{$field});
 
         die "ERROR: Missing mandatory param: $field"
-            if ($fields->{$field} && !exists $values->{$field});
+            if ($required && !exists $values->{$field});
 
         die "ERROR: Received undefined mandatory param: $field"
-            if ($fields->{$field} && !defined $values->{$field});
+            if ($required && !defined $values->{$field});
 
 	$FIELDS->{$field}->{check}->($values->{$field})
             if defined $values->{$field};
+    }
+
+    foreach my $value (keys %$values) {
+        die "ERROR: Invalid key found in params." unless (grep /\b$value\b/, @$keys);
     }
 }
 

@@ -9,6 +9,7 @@ use Data::Dumper;
 use WWW::StatsMix::Stat;
 use WWW::StatsMix::Metric;
 use WWW::StatsMix::UserAgent;
+use WWW::StatsMix::Params qw(validate $FIELDS);
 
 use Moo;
 use namespace::clean;
@@ -96,7 +97,14 @@ possible parameters for the method are as below:
 sub create_metric {
     my ($self, $params) = @_;
 
-    die "ERROR: Missing the required parameters." unless defined $params;
+    my $data = [
+        { key => 'name'             , required => 1 },
+        { key => 'profile_id'       , required => 0 },
+        { key => 'url'              , required => 0 },
+        { key => 'sharing'          , required => 0 },
+        { key => 'include_in_email' , required => 0 },
+    ];
+    validate($data, $params);
 
     $params->{format} = $self->format;
     my $response = $self->post($self->metrics_url, [ %$params ]);
@@ -140,8 +148,15 @@ possible parameters for the method are as below:
 sub update_metric {
     my ($self, $id, $params) = @_;
 
+    my $data = [
+        { key => 'name'             , required => 1 },
+        { key => 'url'              , required => 0 },
+        { key => 'sharing'          , required => 0 },
+        { key => 'include_in_email' , required => 0 },
+    ];
+    validate($data, $params);
     die "ERROR: Missing the required metric id."  unless defined $id;
-    die "ERROR: Missing the required parameters." unless defined $params;
+    die "ERROR: Invalid metric id [$id]."         unless ($id =~ /^\d+$/);
 
     my $url      = sprintf("%s/%d.json", $self->metrics_url, $id);
     my $response = $self->put($url, [ %$params ]);
@@ -177,7 +192,8 @@ It deletes the metric and returns the object of type <WWW::StatsMix::Metric>.
 sub delete_metric {
     my ($self, $id) = @_;
 
-    die "ERROR: Missing the required metric id." unless defined $id;
+    die "ERROR: Missing the required key metric id."       unless defined $id;
+    die "ERROR: Invalid the required key metric id [$id]." unless ($id =~ /^\d+$/);
 
     my $url      = sprintf("%s/%d.json", $self->metrics_url, $id);
     my $response = $self->delete($url);
@@ -224,7 +240,15 @@ sub get_metrics {
     my ($self, $params) = @_;
 
     my $url = sprintf("%s?format=%s", $self->metrics_url, $self->format);
-    if (defined $params && (ref($params) eq 'HASH')) {
+    if (defined $params) {
+        my $data = [
+            { key => 'limit'     , required => 0 },
+            { key => 'profile_id', required => 0 },
+            { key => 'start_date', required => 0 },
+            { key => 'end_date'  , required => 0 },
+        ];
+        validate($data, $params);
+
         if (exists $params->{start_date} && defined $params->{start_date}) {
             die "ERROR: Missing param key 'end_date'."
                 unless (exists $params->{end_date} && defined $params->{end_date});
@@ -293,28 +317,23 @@ stat with ref_id. It returns an object of type L<WWW::StatsMix::Stat>.
 sub create_stat {
     my ($self, $params) = @_;
 
-    die "ERROR: Missing the required parameters."
-        unless (defined $params && (ref($params) eq 'HASH'));
+    my $data = [
+        { key => 'metric_id'   , required => 1 },
+        { key => 'value'       , required => 1 },
+        { key => 'generated_at', required => 0 },
+        { key => 'meta'        , required => 0 },
+        { key => 'ref_id'      , required => 0 }
+    ];
+    validate($data, $params);
 
-    my $data = {};
-    foreach (qw(metric_id value)) {
-        die "ERROR: Required key '$_' is missing/undefined."
-            unless (exists $params->{$_} && defined $params->{$_});
-        $data->{$_} = $params->{$_};
-    }
-    foreach (qw(meta generated_at ref_id)) {
-        $data->{$_} = $params->{$_}
-            if (exists $params->{$_} && defined $params->{$_});
-    }
-
-    if (exists $data->{meta} && defined $data->{meta}) {
+    if (exists $params->{meta} && defined $params->{meta}) {
         die "ERROR: Invalid data format for key 'meta'."
-            unless (ref($data->{meta}) eq 'HASH');
-        $data->{meta} = to_json($data->{meta});
+            unless (ref($params->{meta}) eq 'HASH');
+        $params->{meta} = to_json($params->{meta});
     }
 
-    $data->{format} = $self->format;
-    my $response = $self->post($self->stats_url, [ %$data ]);
+    $params->{format} = $self->format;
+    my $response = $self->post($self->stats_url, [ %$params ]);
     my $content  = from_json($response->content);
 
     return WWW::StatsMix::Stat->new($content->{stat});
@@ -355,10 +374,14 @@ search by stat id or ref id. The return data is of type L<WWW::StatsMix::Stat>.
 sub get_stat {
     my ($self, $metric, $params) = @_;
 
-    die "ERROR: Missing the required key metric id." unless defined $metric;
+    die "ERROR: Missing the required key metric id."           unless defined $metric;
+    die "ERROR: Invalid the required key metric id [$metric]." unless ($metric =~ /^\d+$/);
 
-    die "ERROR: Missing the required parameters."
-        unless (defined $params && (ref($params) eq 'HASH'));
+    my $data = [
+        { key => 'id'    , required => 0 },
+        { key => 'ref_id', required => 0 }
+    ];
+    validate($data, $params);
 
     my $id       = _get_id($params);
     my $url      = sprintf("%s/%d.json?metric_id=%d", $self->stats_url, $id, $metric);
@@ -408,13 +431,21 @@ for the method are as below. The return data is of type L<WWW::StatsMix::Stat>.
 sub update_stat {
     my ($self, $metric, $params) = @_;
 
-    die "ERROR: Missing the required metric id." unless defined $metric;
+    die "ERROR: Missing the required key metric id."           unless defined $metric;
+    die "ERROR: Invalid the required key metric id [$metric]." unless ($metric =~ /^\d+$/);
+
+    my $data = [
+        { key => 'value' , required => 1 },
+        { key => 'id'    , required => 0 },
+        { key => 'ref_id', required => 0 }
+    ];
+    validate($data, $params);
 
     my $id       = _get_id($params);
     my $value    = _get_value($params);
-    my $data     = { metric_id => $metric, value => $value };
+    my $_data    = { metric_id => $metric, value => $value };
     my $url      = sprintf("%s/%d.json", $self->stats_url, $id);
-    my $response = $self->put($url, [ %$data ]);
+    my $response = $self->put($url, [ %$_data ]);
     my $content  = from_json($response->content);
 
     return WWW::StatsMix::Stat->new($content->{stat});
@@ -452,7 +483,14 @@ for the method are as below. The return data is of type L<WWW::StatsMix::Stat>.
 sub delete_stat {
     my ($self, $metric, $params) = @_;
 
-    die "ERROR: Missing the required metric id." unless defined $metric;
+    die "ERROR: Missing the required key metric id."           unless defined $metric;
+    die "ERROR: Invalid the required key metric id [$metric]." unless ($metric =~ /^\d+$/);
+
+    my $data = [
+        { key => 'id'    , required => 0 },
+        { key => 'ref_id', required => 0 }
+    ];
+    validate($data, $params);
 
     my $id       = _get_id($params);
     my $url      = sprintf("%s/%d.json?metric_id=%d", $self->stats_url, $id, $metric);
@@ -499,7 +537,15 @@ sub get_stats {
     my ($self, $params) = @_;
 
     my $url = sprintf("%s?format=%s", $self->stats_url, $self->format);
-    if (defined $params && (ref($params) eq 'HASH')) {
+    if (defined $params) {
+        my $data = [
+            { key => 'limit'     , required => 0 },
+            { key => 'metric_id' , required => 0 },
+            { key => 'start_date', required => 0 },
+            { key => 'end_date'  , required => 0 },
+        ];
+        validate($data, $params);
+
         if (exists $params->{start_date} && defined $params->{start_date}) {
             die "ERROR: Missing param key 'end_date'."
                 unless (exists $params->{end_date} && defined $params->{end_date});
@@ -572,31 +618,21 @@ an object of type L<WWW::StatsMix::Stat>.
 sub track {
     my ($self, $params) = @_;
 
-    die "ERROR: Missing the required parameters."
-        unless (defined $params && (ref($params) eq 'HASH'));
+    my $data = [
+        { key => 'name'        , required => 1 },
+        { key => 'value'       , required => 0 },
+        { key => 'generated_at', required => 0 },
+        { key => 'meta'        , required => 0 },
+        { key => 'ref_id'      , required => 0 },
+        { key => 'profile_id'  , required => 0 }
+    ];
+    validate($data, $params);
 
-    die "ERROR: Required key 'name' is missing/undefined."
-        unless (exists $params->{name} && defined $params->{name});
+    $params->{meta} = to_json($params->{meta})
+        if (exists $params->{meta} && defined $params->{meta});
 
-    my $data = { name => $params->{name} };
-    foreach (qw(value meta generated_at ref_id profile_id)) {
-        $data->{$_} = $params->{$_}
-            if (exists $params->{$_} && defined $params->{$_});
-    }
-
-    if (exists $data->{meta} && defined $data->{meta}) {
-        die "ERROR: Invalid data format for key 'meta'."
-            unless (ref($data->{meta}) eq 'HASH');
-        $data->{meta} = to_json($data->{meta});
-    }
-
-    if (exists $data->{generated_at} && defined $data->{generated_at}) {
-        die "ERROR: Invalid data for key 'generated_at'."
-            unless _is_valid_date($data->{generated_at});
-    }
-
-    $data->{format} = $self->format;
-    my $response = $self->post($self->track_url, [ %$data ]);
+    $params->{format} = $self->format;
+    my $response = $self->post($self->track_url, [ %$params ]);
     my $content  = from_json($response->content);
 
     return WWW::StatsMix::Stat->new($content->{stat});
@@ -609,11 +645,11 @@ sub track {
 sub _get_id {
     my ($params) = @_;
 
-    if (defined $params) {
-        if (exists $params->{id}) {
+    if (defined $params && (ref($params) eq 'HASH')) {
+        if (exists $params->{id} && defined $params->{id}) {
             return $params->{id};
         }
-        elsif (exists $params->{ref_id}) {
+        elsif (exists $params->{ref_id} && defined $params->{ref_id}) {
             return $params->{ref_id};
         }
     }
@@ -660,25 +696,6 @@ sub _now_yyyy_mm_dd_hh_mi_ss {
 sub _now_yyyy_mm_dd {
     my ($sec,$min,$hour,$mday,$mon,$year) = localtime(time);
     return sprintf("%04d-%02d-%02d", $year+=1900, ++$mon, $mday);
-}
-
-sub _is_valid_date {
-    my ($date) = @_;
-
-    if ($date =~ m!^((?:19|20)\d\d)\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$!) {
-        # At this point, $1 holds the year, $2 the month and $3 the day of the date entered
-        if ($3 == 31 and ($2 == 4 or $2 == 6 or $2 == 9 or $2 == 11)) {
-            return 0; # 31st of a month with 30 days
-        } elsif ($3 >= 30 and $2 == 2) {
-            return 0; # February 30th or 31st
-        } elsif ($2 == 2 and $3 == 29 and not ($1 % 4 == 0 and ($1 % 100 != 0 or $1 % 400 == 0))) {
-            return 0; # February 29th outside a leap year
-        } else {
-            return 1; # Valid date
-        }
-    } else {
-        return 0; # Not a date
-    }
 }
 
 =head1 Author
