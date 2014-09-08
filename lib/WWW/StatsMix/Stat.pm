@@ -1,6 +1,6 @@
 package WWW::StatsMix::Stat;
 
-$WWW::StatsMix::Stat::VERSION = '0.01';
+$WWW::StatsMix::Stat::VERSION = '0.02';
 
 use 5.006;
 use Moo;
@@ -12,7 +12,7 @@ WWW::StatsMix::Stat - Placeholder for StatsMix Stat.
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =cut
 
@@ -25,8 +25,6 @@ has meta         => (is => 'ro');
 has generated_at => (is => 'ro');
 has created_at   => (is => 'ro');
 has updated_at   => (is => 'ro');
-
-=head1 DESCRIPTION
 
 =head1 METHODS
 
@@ -51,6 +49,10 @@ has updated_at   => (is => 'ro');
 =head1 AUTHOR
 
 Mohammad S Anwar, C<< <mohammad.anwar at yahoo.com> >>
+
+=head1 REPOSITORY
+
+L<https://github.com/Manwar/WWW-StatsMix>
 
 =head1 BUGS
 

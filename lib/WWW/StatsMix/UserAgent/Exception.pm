@@ -1,6 +1,6 @@
 package WWW::StatsMix::UserAgent::Exception;
 
-$WWW::StatsMix::UserAgent::Exception::VERSION = '0.01';
+$WWW::StatsMix::UserAgent::Exception::VERSION = '0.02';
 
 use 5.006;
 use Moo;
@@ -21,7 +21,7 @@ WWW::StatsMix::UserAgent::Exception - StatsMix API user agent exception class.
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =cut
 
@@ -36,6 +36,10 @@ sub as_string {
 =head1 AUTHOR
 
 Mohammad S Anwar, C<< <mohammad.anwar at yahoo.com> >>
+
+=head1 REPOSITORY
+
+L<https://github.com/Manwar/WWW-StatsMix>
 
 =head1 BUGS
 

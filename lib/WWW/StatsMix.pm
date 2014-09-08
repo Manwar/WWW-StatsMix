@@ -1,6 +1,6 @@
 package WWW::StatsMix;
 
-$WWW::StatsMix::VERSION = '0.01';
+$WWW::StatsMix::VERSION = '0.02';
 
 use 5.006;
 use JSON;
@@ -21,7 +21,7 @@ WWW::StatsMix - Interface to StatsMix API.
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =cut
 
@@ -115,7 +115,7 @@ sub create_metric {
 
 =head2 update_metric(metric_id, params)
 
-It updates the metric and returns the object of type <WWW::StatsMix::Metric>. The
+It updates the metric & returns the object of type L<WWW::StatsMix::Metric>.  The
 possible parameters for the method are as below:
 
    +------------------+-----------------------------------------------------------------------+
@@ -167,7 +167,7 @@ sub update_metric {
 
 =head2 delete_metric(metric_id)
 
-It deletes the metric and returns the object of type <WWW::StatsMix::Metric>.
+It deletes the metric and returns the object of type L<WWW::StatsMix::Metric>.
 
    +-----------+----------------------------------------+
    | Key       | Description                            |
@@ -698,7 +698,7 @@ sub _now_yyyy_mm_dd {
     return sprintf("%04d-%02d-%02d", $year+=1900, ++$mon, $mday);
 }
 
-=head1 Author
+=head1 AUTHOR
 
 Mohammad S Anwar, C<< <mohammad.anwar at yahoo.com> >>
 

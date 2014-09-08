@@ -14,19 +14,18 @@ not run its Makefile.PL or Build.PL.
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-SHA1 8a7526547ddf9d065c12586ba86ee0cc8656c325 Changes
-SHA1 fdb1f219d721acc9f2ecace4e7a8ed4243a38d1a MANIFEST
+SHA1 150c9a448e5e4d2eecd85a2144788fb3caefb831 Changes
+SHA1 dad17d75896ef760f9321baf5b9c633f664a7e49 MANIFEST
 SHA1 5f29cdcbfacb9c46ac155fff9844aceeb064aef1 MANIFEST.SKIP
 SHA1 a5a4f3154de20abbf386de0e903261e56b276e7b Makefile.PL
 SHA1 ea658bf030498ea99ed7532db5e1be8ca84119f2 README
-SHA1 5a4c5dfe64c9ed16e214f76f053d4bb2b909c4d6 lib/WWW/StatsMix.pm
-SHA1 a53a3573beb600d931871f1a2352006f3b897480 lib/WWW/StatsMix/Metric.pm
-SHA1 a5c53b71b2f594b69cf79d8bd81c74aac6f25904 lib/WWW/StatsMix/Params.pm
-SHA1 4e181a9ef0df1353552eb740fddec9b393c04aef lib/WWW/StatsMix/Stat.pm
-SHA1 80e995966e6729cf408a26844db59d5065264262 lib/WWW/StatsMix/Track.pm
-SHA1 a766f82a80f8e43b41f5340c229c20066664fcf1 lib/WWW/StatsMix/UserAgent.pm
-SHA1 505bdfe3c4000b359c10ae9ee3ce250a1ee695b9 lib/WWW/StatsMix/UserAgent/Exception.pm
-SHA1 f9ef59e854b81eee82a328472c8e8e329bbca3a1 t/00-load.t
+SHA1 373e4362dbfd622d9000d4a8afbb73f66f210e6a lib/WWW/StatsMix.pm
+SHA1 b475572e04de3cbcfc0fdeaa9891d9c664192f34 lib/WWW/StatsMix/Metric.pm
+SHA1 9cf738fbaf0da32032fb1a734f4a1ca54886302d lib/WWW/StatsMix/Params.pm
+SHA1 009a3ba2c5c36e1f4a3851e0c39161a89cedfe59 lib/WWW/StatsMix/Stat.pm
+SHA1 ef9de0b82870bcc23cca910d4e0f4233705a73d3 lib/WWW/StatsMix/UserAgent.pm
+SHA1 19d0beacf5fab3c740f9075eaef8169f8c93f60b lib/WWW/StatsMix/UserAgent/Exception.pm
+SHA1 5cd1c4d3437b45a5c08fda3232e4bcffb4a6e07b t/00-load.t
 SHA1 d756c93af4c534cb84d5b431bf053fa183a4fe15 t/01-new.t
 SHA1 785757f28ef619e0a09f476b27e24e5b7837812b t/02-create_metric.t
 SHA1 cb19db716d032e194e64730365dd500010077d8d t/03-update_metric.t
@@ -40,14 +39,15 @@ SHA1 f090ba4f728e2a2752212e945edfa410d7cde86e t/10-get_stats.t
 SHA1 8112ddb7250f8aa02141a3e3b0fddd9b8ad15c5f t/11-track.t
 SHA1 3e86d3e277d4233e55b8a4555bf6edf2dcdf7bd0 t/manifest.t
 SHA1 a572bbed348e70b106f01fa02fee8b8edd6735d5 t/pod.t
+SHA1 0cfc2aa69bf711fff332d49d33991acf6755c664 t/signature.t
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQEcBAEBAgAGBQJUDNC7AAoJENoXJXWo7C/pHCoIAKZfbGJsvAqccI9YOgbRt/cw
-bESdvw8CmZby9JwUlv/IFwapEVEYUPFJmNmNMDjieCLbyAEYf9ddj78euCDpFFSX
-rQXut1swxsnemxMqQZ+moMD/GV51qdp5YjPe+hM+cC0kFwK8668/xQ9RqA0PYweX
-zNIq/TRiRoacQFJAi5yndvwhETJpE0W/Kp3vuVzMooYdSIePbkvOwbbxDeYUzByw
-pJxnpIg2Qt6YjZjxmzNQaCZ9YNYLMHkcguCS3S3+ia3F+OiLiQIiVl/2p7y2mvbX
-YLBrZXfsp2W9mXSofGVjHblOxTGDqqQNI/xV62777mUYCjfE3TCNao7NLSsv75U=
-=pB9m
+iQEcBAEBAgAGBQJUDik4AAoJENoXJXWo7C/pXRkH/R9QJMQ2XWt7RK4MGGXaejx4
+KSFgI1I3amh3ydn0ft6i/vs3MY/4MPGXyN87MVX+KBke+y5nmD4we6q/DpZ2KcWM
+lWco3RbMqAbmlz5OoaIGPF1FcW4ErxP8HybyI/2jvcBrIfGfAs/hYi3vzNqh0Agf
+IFxvcndhuCYdcLgU54eW3N98pZEKROAfoniVfhRSmWC1sprRGbEawD7+RFWFThZF
+C6Mj7rp8VgS6ePd9Iys8QDLgmeB8vm3Q0bQG1zIX1mWBp9initWqMl5SnJ6yzW5u
+ri9MvEixphgDjud8vMPVYxwQu2SFo7qJwksdwojJ/Jf125xJVaqloZiRKtAiX0Y=
+=4wUk
 -----END PGP SIGNATURE-----

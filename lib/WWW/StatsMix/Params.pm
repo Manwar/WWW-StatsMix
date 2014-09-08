@@ -1,6 +1,6 @@
 package WWW::StatsMix::Params;
 
-$WWW::StatsMix::Params::VERSION = '0.01';
+$WWW::StatsMix::Params::VERSION = '0.02';
 
 use 5.006;
 use strict; use warnings;
@@ -18,7 +18,7 @@ WWW::StatsMix::Params - Placeholder for parameters for WWW::StatsMix
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =cut
 
@@ -43,8 +43,6 @@ sub check_sharing {
     die "ERROR: Invalid data type 'sharing' found [$str]"
         unless (defined $str && exists $SHARING->{$str});
 };
-
-
 
 sub check_zero_or_one {
     my ($str) = @_;
@@ -163,6 +161,10 @@ sub validate {
 =head1 AUTHOR
 
 Mohammad S Anwar, C<< <mohammad.anwar at yahoo.com> >>
+
+=head1 REPOSITORY
+
+L<https://github.com/Manwar/WWW-StatsMix>
 
 =head1 BUGS
 

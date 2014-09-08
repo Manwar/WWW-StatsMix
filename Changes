@@ -1,4 +1,15 @@
 Revision history for WWW-StatsMix
 
-0.01    Sun Sep 07 10:40:10 2014
-        First version, released.
+0.02  Mon Sep 08 23:08:01 2014
+      - Deleted un-used package WWW::StatsMix::Track.
+      - Updated unit test 00-load.t to test all new packages.
+      - Added new unit test signature.t
+      - Updated WWW::StatsMix pod to have correct link to helper package.
+      - Added section 'REPOSITORY' to the WWW::StatsMix::Metric pod.
+      - Added section 'REPOSITORY' to the WWW::StatsMix::Stat pod.
+      - Added section 'REPOSITORY' to the WWW::StatsMix::Params pod.
+      - Added section 'REPOSITORY' to the WWW::StatsMix::UserAgent pod.
+      - Added section 'REPOSITORY' to the WWW::StatsMix::UserAgent::Exception pod.
+
+0.01  Sun Sep 07 22:40:10 2014
+      - First version, released.
