@@ -1,5 +1,8 @@
 Revision history for WWW-StatsMix
 
+0.04  Fri Sep 12 23:03:00 2014
+      - Removed un-unsed import of $FIELDS into the package WWW::StatsMix.
+
 0.03  Fri Sep 12 16:49:10 2014
       - Updated method WWW::StatsMix::Params::validate() to validate every data passed.
       - Updated unit test 02-create_metric.t, 03-update_metric.t, 07-get_stat.t, 08-update_stat.t and 09-delete_stat.t

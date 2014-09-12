@@ -1,6 +1,6 @@
 package WWW::StatsMix::Metric;
 
-$WWW::StatsMix::Metric::VERSION = '0.03';
+$WWW::StatsMix::Metric::VERSION = '0.04';
 
 use 5.006;
 use Moo;
@@ -12,7 +12,7 @@ WWW::StatsMix::Metric - Placeholder for StatsMix Metric.
 
 =head1 VERSION
 
-Version 0.03
+Version 0.04
 
 =cut
 

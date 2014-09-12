@@ -1,6 +1,6 @@
 package WWW::StatsMix;
 
-$WWW::StatsMix::VERSION = '0.03';
+$WWW::StatsMix::VERSION = '0.04';
 
 use 5.006;
 use JSON;
@@ -9,7 +9,7 @@ use Data::Dumper;
 use WWW::StatsMix::Stat;
 use WWW::StatsMix::Metric;
 use WWW::StatsMix::UserAgent;
-use WWW::StatsMix::Params qw(validate $FIELDS);
+use WWW::StatsMix::Params qw(validate);
 
 use Moo;
 use namespace::clean;
@@ -21,7 +21,7 @@ WWW::StatsMix - Interface to StatsMix API.
 
 =head1 VERSION
 
-Version 0.03
+Version 0.04
 
 =cut
 
