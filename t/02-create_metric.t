@@ -2,7 +2,7 @@
 
 use strict; use warnings;
 use WWW::StatsMix;
-use Test::More tests => 7;
+use Test::More tests => 11;
 
 my $api_key = 'Your_API_Key';
 my $api = WWW::StatsMix->new({ api_key => $api_key });
@@ -27,5 +27,17 @@ like($@, qr/ERROR: Invalid data type 'sharing' found/);
 
 eval { $api->create_metric({ name => 'test', url => 'x', format => 'json' }) };
 like($@, qr/ERROR: Invalid data type 'url' found/);
+
+eval { $api->create_metric({ name => 'test', sharing => 'public', format => 'json' }) };
+like($@, qr/ERROR: Missing key 'url' since 'sharing' is provided/);
+
+eval { $api->create_metric({ name => 'test', sharing => 'public', url => 'x', format => 'json' }) };
+like($@, qr/ERROR: Invalid data type 'url' found/);
+
+eval { $api->create_metric({ name => 'test', url => 'http://www.google.com', format => 'json' }) };
+like($@, qr/ERROR: Missing key 'sharing' since 'url' is provided/);
+
+eval { $api->create_metric({ name => 'test', url => 'http://www.google.com', sharing => 'x', format => 'json' }) };
+like($@, qr/ERROR: Invalid data type 'sharing' found/);
 
 done_testing();

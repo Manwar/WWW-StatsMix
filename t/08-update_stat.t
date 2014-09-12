@@ -29,7 +29,7 @@ eval { $api->update_stat(1, { value => 1.5, id => 'x' }) };
 like($@, qr/ERROR: Invalid NUM data type/);
 
 eval { $api->update_stat(1, { value => 1.5, ref_id => undef }) };
-like($@, qr/ERROR: Missing required key id\/ref_id/);
+like($@, qr/ERROR: Received undefined param: ref_id/);
 
 eval { $api->update_stat(1, { value => 'x' }) };
 like($@, qr/ERROR: Invalid data type 'value'/);

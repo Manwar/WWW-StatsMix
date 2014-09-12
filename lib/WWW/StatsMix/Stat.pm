@@ -1,6 +1,6 @@
 package WWW::StatsMix::Stat;
 
-$WWW::StatsMix::Stat::VERSION = '0.02';
+$WWW::StatsMix::Stat::VERSION = '0.03';
 
 use 5.006;
 use Moo;
@@ -12,7 +12,7 @@ WWW::StatsMix::Stat - Placeholder for StatsMix Stat.
 
 =head1 VERSION
 
-Version 0.02
+Version 0.03
 
 =cut
 

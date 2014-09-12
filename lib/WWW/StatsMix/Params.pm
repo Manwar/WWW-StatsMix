@@ -1,6 +1,6 @@
 package WWW::StatsMix::Params;
 
-$WWW::StatsMix::Params::VERSION = '0.02';
+$WWW::StatsMix::Params::VERSION = '0.03';
 
 use 5.006;
 use strict; use warnings;
@@ -18,7 +18,7 @@ WWW::StatsMix::Params - Placeholder for parameters for WWW::StatsMix
 
 =head1 VERSION
 
-Version 0.02
+Version 0.03
 
 =cut
 
@@ -155,6 +155,8 @@ sub validate {
 
     foreach my $value (keys %$values) {
         die "ERROR: Invalid key found in params." unless (grep /\b$value\b/, @$keys);
+        die "ERROR: Received undefined param: $value" unless (defined $values->{$value});
+        $FIELDS->{$value}->{check}->($values->{$value});
     }
 }
 

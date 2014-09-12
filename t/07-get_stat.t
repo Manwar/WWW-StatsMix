@@ -29,6 +29,6 @@ eval { $api->get_stat(1, { id => 'x' }) };
 like($@, qr/ERROR: Invalid NUM data type/);
 
 eval { $api->get_stat(1, { ref_id => undef }) };
-like($@, qr/ERROR: Missing required key id\/ref_id/);
+like($@, qr/ERROR: Received undefined param: ref_id/);
 
 done_testing();
