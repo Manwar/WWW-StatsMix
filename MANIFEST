@@ -6,7 +6,6 @@ lib/WWW/StatsMix/Params.pm
 lib/WWW/StatsMix/UserAgent.pm
 lib/WWW/StatsMix/UserAgent/Exception.pm
 Makefile.PL
-SIGNATURE
 MANIFEST
 MANIFEST.SKIP
 README

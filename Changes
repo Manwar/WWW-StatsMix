@@ -1,5 +1,10 @@
 Revision history for WWW-StatsMix
 
+0.05  Sat Jan 17 11:00:00 2015
+      - Removed SIGNATURE file.
+      - Updated MANIFEST.SKIP file to ignore folder 'eumm/'.
+      - Updated Copyright year information.
+
 0.04  Fri Sep 12 23:03:00 2014
       - Removed un-unsed import of $FIELDS into the package WWW::StatsMix.
 

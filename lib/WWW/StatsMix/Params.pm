@@ -1,6 +1,16 @@
 package WWW::StatsMix::Params;
 
-$WWW::StatsMix::Params::VERSION = '0.04';
+$WWW::StatsMix::Params::VERSION = '0.05';
+
+=head1 NAME
+
+WWW::StatsMix::Params - Placeholder for parameters for WWW::StatsMix
+
+=head1 VERSION
+
+Version 0.05
+
+=cut
 
 use 5.006;
 use strict; use warnings;
@@ -12,22 +22,9 @@ require Exporter;
 @ISA = qw(Exporter);
 @EXPORT_OK = qw(validate $FIELDS);
 
-=head1 NAME
-
-WWW::StatsMix::Params - Placeholder for parameters for WWW::StatsMix
-
-=head1 VERSION
-
-Version 0.04
-
-=cut
-
 our $SHARING   = { public => 1, none => 1 };
-
 our $Sharing   = sub { check_sharing($_[0])     };
-
 our $XmlOrJson = sub { check_format($_[0])      };
-
 our $ZeroOrOne = sub { check_zero_or_one($_[0]) };
 
 sub check_format {
@@ -205,7 +202,7 @@ L<http://search.cpan.org/dist/WWW-StatsMix/>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (C) 2014 Mohammad S Anwar.
+Copyright (C) 2014 - 2015 Mohammad S Anwar.
 
 This  program  is  free software; you can redistribute it and/or modify it under
 the  terms  of the the Artistic License (2.0). You may obtain a copy of the full

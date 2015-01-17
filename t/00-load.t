@@ -2,9 +2,7 @@
 use 5.006;
 use strict;
 use warnings FATAL => 'all';
-use Test::More;
-
-plan tests => 6;
+use Test::More tests => 6;
 
 BEGIN {
     use_ok( 'WWW::StatsMix' )                       || print "Bail out!\n";

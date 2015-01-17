@@ -1,6 +1,16 @@
 package WWW::StatsMix::UserAgent::Exception;
 
-$WWW::StatsMix::UserAgent::Exception::VERSION = '0.04';
+$WWW::StatsMix::UserAgent::Exception::VERSION = '0.05';
+
+=head1 NAME
+
+WWW::StatsMix::UserAgent::Exception - StatsMix API user agent exception class.
+
+=head1 VERSION
+
+Version 0.05
+
+=cut
 
 use 5.006;
 use Moo;
@@ -14,16 +24,6 @@ has message     => (is => 'ro');
 has code        => (is => 'ro');
 has filename    => (is => 'ro');
 has line_number => (is => 'ro');
-
-=head1 NAME
-
-WWW::StatsMix::UserAgent::Exception - StatsMix API user agent exception class.
-
-=head1 VERSION
-
-Version 0.04
-
-=cut
 
 sub as_string {
     my ($self) = @_;
@@ -76,7 +76,7 @@ L<http://search.cpan.org/dist/WWW-StatsMix/>
 
 =back
 
-Copyright (C) 2014 Mohammad S Anwar.
+Copyright (C) 2014 - 2015 Mohammad S Anwar.
 
 This  program  is  free software; you can redistribute it and/or modify it under
 the  terms  of the the Artistic License (2.0). You may obtain a copy of the full

@@ -1,6 +1,16 @@
 package WWW::StatsMix::UserAgent;
 
-$WWW::StatsMix::UserAgent::VERSION = '0.04';
+$WWW::StatsMix::UserAgent::VERSION = '0.05';
+
+=head1 NAME
+
+WWW::StatsMix::UserAgent - StatsMix API user agent library.
+
+=head1 VERSION
+
+Version 0.05
+
+=cut
 
 use 5.006;
 use JSON;
@@ -12,16 +22,6 @@ use WWW::StatsMix::UserAgent::Exception;
 
 use Moo;
 use namespace::clean;
-
-=head1 NAME
-
-WWW::StatsMix::UserAgent - StatsMix API user agent library.
-
-=head1 VERSION
-
-Version 0.04
-
-=cut
 
 has 'api_key' => ( is => 'ro', required => 1 );
 has 'ua'      => ( is => 'rw', default  => sub { LWP::UserAgent->new(agent => "WWW-StatsMix-API/0.01"); } );
@@ -159,7 +159,7 @@ L<http://search.cpan.org/dist/WWW-StatsMix/>
 
 =back
 
-Copyright (C) 2014 Mohammad S Anwar.
+Copyright (C) 2014 - 2015 Mohammad S Anwar.
 
 This  program  is  free software; you can redistribute it and/or modify it under
 the  terms  of the the Artistic License (2.0). You may obtain a copy of the full

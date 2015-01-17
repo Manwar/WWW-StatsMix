@@ -1,6 +1,16 @@
 package WWW::StatsMix;
 
-$WWW::StatsMix::VERSION = '0.04';
+$WWW::StatsMix::VERSION = '0.05';
+
+=head1 NAME
+
+WWW::StatsMix - Interface to StatsMix API.
+
+=head1 VERSION
+
+Version 0.05
+
+=cut
 
 use 5.006;
 use JSON;
@@ -14,16 +24,6 @@ use WWW::StatsMix::Params qw(validate);
 use Moo;
 use namespace::clean;
 extends 'WWW::StatsMix::UserAgent';
-
-=head1 NAME
-
-WWW::StatsMix - Interface to StatsMix API.
-
-=head1 VERSION
-
-Version 0.04
-
-=cut
 
 has format      => (is => 'ro', default => sub { return 'json' });
 has metrics_url => (is => 'ro', default => sub { return 'http://api.statsmix.com/api/v2/metrics' });
@@ -783,7 +783,7 @@ L<http://search.cpan.org/dist/WWW-StatsMix/>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (C) 2014 Mohammad S Anwar.
+Copyright (C) 2014 - 2015 Mohammad S Anwar.
 
 This  program  is  free software; you can redistribute it and/or modify it under
 the  terms  of the the Artistic License (2.0). You may obtain a copy of the full
