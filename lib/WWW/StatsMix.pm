@@ -1,6 +1,6 @@
 package WWW::StatsMix;
 
-$WWW::StatsMix::VERSION = '0.05';
+$WWW::StatsMix::VERSION = '0.06';
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ WWW::StatsMix - Interface to StatsMix API.
 
 =head1 VERSION
 
-Version 0.05
+Version 0.06
 
 =cut
 
@@ -66,24 +66,25 @@ Standard plans are limited to 300,000 API requests per month.
 It creates new metric and returns the object of type L<WWW::StatsMix::Metric>.The
 possible parameters for the method are as below:
 
-   +------------------+-----------------------------------------------------------------------+
-   | Key              | Description                                                           |
-   +------------------+-----------------------------------------------------------------------+
-   | name             | The name of the metric. Metric names must be unique within a profile. |
-   | (required)       |                                                                       |
-   |                  |                                                                       |
-   | profile_id       | The profile the metric belongs in.                                    |
-   | (optional)       |                                                                       |
-   |                  |                                                                       |
-   | sharing          | Sharing status for the metric. Either "public" (unauthenticated users |
-   | (optional)       | can view the metric at the specific URL) or "none" (default).         |
-   |                  |                                                                       |
-   | include_in_email | This specifies whether to include the metric in the daily             |
-   | (optional)       | StatsMix email sent to users.                                         |
-   |                  |                                                                       |
-   | url              | Publicly accessible URL for the metric (only if sharing is set        |
-   | (optional)       | to "public").                                                         |
-   +------------------+-----------------------------------------------------------------------+
+   +------------------+---------------------------------------------------------+
+   | Key              | Description                                             |
+   +------------------+---------------------------------------------------------+
+   | name             | The name of the metric. Metric names must be unique     |
+   | (required)       | within a profile.                                       |
+   |                  |                                                         |
+   | profile_id       | The profile the metric belongs in.                      |
+   | (optional)       |                                                         |
+   |                  |                                                         |
+   | sharing          | Sharing status for the metric. Either "public"          |
+   | (optional)       | (unauthenticated users can view the metric at the       |
+   |                  | specific URL) or "none" (default).                      |
+   |                  |                                                         |
+   | include_in_email | This specifies whether to include the metric in the     |
+   | (optional)       | daily StatsMix email sent to users.                     |
+   |                  |                                                         |
+   | url              | Publicly accessible URL for the metric (only if sharing |
+   | (optional)       | is set to "public").                                    |
+   +------------------+---------------------------------------------------------+
 
    use strict; use warnings;
    use WWW::StatsMix;
@@ -135,20 +136,22 @@ It updates the metric & returns the object of type L<WWW::StatsMix::Metric>. Thi
 requires mandatory param 'metric_id' and atleast one of the following key as  ref
 to hash format data. Possible parameters are as below:
 
-   +------------------+-----------------------------------------------------------------------+
-   | Key              | Description                                                           |
-   +------------------+-----------------------------------------------------------------------+
-   | name             | The name of the metric. Metric names must be unique within a profile. |
-   |                  |                                                                       |
-   | sharing          | Sharing status for the metric. Either "public" (unauthenticated users |
-   |                  | can view the metric at the specific URL) or "none" (default).         |
-   |                  |                                                                       |
-   | include_in_email | This specifies whether to include the metric in the daily             |
-   |                  | StatsMix email sent to users.                                         |
-   |                  |                                                                       |
-   | url              | Publicly accessible URL for the metric (only if sharing is set        |
-   |                  | to "public").                                                         |
-   +------------------+-----------------------------------------------------------------------+
+   +------------------+---------------------------------------------------------+
+   | Key              | Description                                             |
+   +------------------+---------------------------------------------------------+
+   | name             | The name of the metric. Metric names must be unique     |
+   |                  | within a profile.                                       |
+   |                  |                                                         |
+   | sharing          | Sharing status for the metric. Either "public"          |
+   |                  | (unauthenticated users can view the metric at the       |
+   |                  | specific URL) or "none" (default).                      |
+   |                  |                                                         |
+   | include_in_email | This specifies whether to include the metric in the     |
+   |                  | daily StatsMix email sent to users.                     |
+   |                  |                                                         |
+   | url              | Publicly accessible URL for the metric (only if sharing |
+   |                  | is set to "public").                                    |
+   +------------------+---------------------------------------------------------+
 
    use strict; use warnings;
    use WWW::StatsMix;
@@ -315,26 +318,28 @@ sub get_metrics {
 The  method  create_stat() creates stat for the given metric. You can also create
 stat with ref_id. It returns an object of type L<WWW::StatsMix::Stat>.
 
-   +--------------+----------------------------------------------------------------------------+
-   | Key          | Description                                                                |
-   +--------------+----------------------------------------------------------------------------+
-   | metric_id    | The metric id for which the stat would be created.                         |
-   | (required)   |                                                                            |
-   |              |                                                                            |
-   | value        | The numeric value of the stat with a decimal precision of two. Decimal (up |
-   | (required)   | to 11 digits on the left side of the decimal point, two on the right).     |
-   |              |                                                                            |
-   | generated_at | Datetime for the stat. If not set, defaults to the current timestamp. This |
-   | (optional)   | is the datetime to be used in the charts. Valid format is YYYY-MM-DD.      |
-   |              |                                                                            |
-   | meta         | hash ref data (key,value pair) about anything associated with the stat.    |
-   | (optional)   |                                                                            |
-   |              |                                                                            |
-   | ref_id       | Optional reference id for a stat. If a stat already exists for the named   |
-   | (optional)   | metric and the given ref_id, the value (and optionally generated_at and    |
-   |              | meta) will be updated instead of created.                                  |
-   |              |                                                                            |
-   +--------------+----------------------------------------------------------------------------+
+   +--------------+-------------------------------------------------------------+
+   | Key          | Description                                                 |
+   +--------------+-------------------------------------------------------------+
+   | metric_id    | The metric id for which the stat would be created.          |
+   | (required)   |                                                             |
+   |              |                                                             |
+   | value        | The numeric value of the stat with a decimal precision of   |
+   | (required)   | two. Decimal (up to 11 digits on the left side of the       |
+   |              | decimal point, two on the right).                           |
+   |              |                                                             |
+   | generated_at | Datetime for the stat. If not set, defaults to the current. |
+   | (optional)   | timestamp. This is the datetime to be used in the charts.   |
+   |              | Valid format is YYYY-MM-DD.                                 |
+   |              |                                                             |
+   | meta         | hash ref data (key,value pair) about anything associated    |
+   | (optional)   | with the stat.                                              |
+   |              |                                                             |
+   | ref_id       | Optional reference id for a stat. If a stat already exists  |
+   | (optional)   | for the named metric and the given ref_id, the value (and   |
+   |              | optionally generated_at and meta) will be updated instead of|
+   |              | created.                                                    |
+   +--------------+-------------------------------------------------------------+
 
    use strict; use warnings;
    use WWW::StatsMix;
@@ -382,13 +387,13 @@ search by stat id or ref id. The return data is of type L<WWW::StatsMix::Stat>.I
 requires  mandatory  key  'metric_id'. If both 'id' and 'ref_id' are defined then
 'id' takes the precedence.
 
-   +--------+------------------------------------------------------------------+
-   | Key    | Description                                                      |
-   +--------+------------------------------------------------------------------+
-   | id     | The stat id of the stat. Required only if 'ref_id' is undefined. |
-   |        |                                                                  |
-   | ref_id | Ref id of the stat. Required only if 'id' is undefined.          |
-   +--------+------------------------------------------------------------------+
+   +--------+-------------------------------------------------------------------+
+   | Key    | Description                                                       |
+   +--------+-------------------------------------------------------------------+
+   | id     | Id of the stat. Required only if 'ref_id' is undefined.           |
+   |        |                                                                   |
+   | ref_id | Ref id of the stat. Required only if 'id' is undefined.           |
+   +--------+-------------------------------------------------------------------+
 
    use strict; use warnings;
    use WWW::StatsMix;
@@ -435,16 +440,17 @@ requires mandatory key 'metric_id' and params as hash ref. Following keys can  b
 passed  in  hash ref. If  both  'id' and 'ref_id' are defined then 'id' takes the
 precedence.
 
-   +------------+----------------------------------------------------------------------------+
-   | Key        | Description                                                                |
-   +------------+----------------------------------------------------------------------------+
-   | value      | The numeric value of the stat with a decimal precision of two. Decimal (up |
-   | (required) | to 11 digits on the left side of the decimal point, two on the right).     |
-   |            |                                                                            |
-   | id         | The stat id of the stat. Required only if 'ref_id' is undefined.           |
-   |            |                                                                            |
-   | ref_id     | Ref id of the stat. Required only if 'id' is undefined.                    |
-   +------------+----------------------------------------------------------------------------+
+   +------------+---------------------------------------------------------------+
+   | Key        | Description                                                   |
+   +------------+---------------------------------------------------------------+
+   | value      | The numeric value of the stat with a decimal precision of two.|
+   | (required) | Decimal (up to 11 digits on the left side of the decimal      |
+   |            | point, two on the right).                                     |
+   |            |                                                               |
+   | id         | Id of the stat. Required only if 'ref_id' is undefined.       |
+   |            |                                                               |
+   | ref_id     | Ref id of the stat. Required only if 'id' is undefined.       |
+   +------------+---------------------------------------------------------------+
 
    use strict; use warnings;
    use WWW::StatsMix;
@@ -494,13 +500,13 @@ for the method are as below. The return data is of type L<WWW::StatsMix::Stat>.I
 requires mandatory key 'metric_id' and params as hash ref. The hash  ref can have
 either 'id' or 'ref_id'. If both specified then 'id' takes the precedence.
 
-   +--------+------------------------------------------------------------------+
-   | Key    | Description                                                      |
-   +--------+------------------------------------------------------------------+
-   | id     | The stat id of the stat. Required only if 'ref_id' is undefined. |
-   |        |                                                                  |
-   | ref_id | Ref id of the stat. Required only if 'id' is undefined.          |
-   +--------+------------------------------------------------------------------+
+   +--------+-------------------------------------------------------------------+
+   | Key    | Description                                                       |
+   +--------+-------------------------------------------------------------------+
+   | id     | Id of the stat. Required only if 'ref_id' is undefined.           |
+   |        |                                                                   |
+   | ref_id | Ref id of the stat. Required only if 'id' is undefined.           |
+   +--------+-------------------------------------------------------------------+
 
    use strict; use warnings;
    use WWW::StatsMix;
@@ -617,30 +623,35 @@ It combines the functions create_stat() and create_metric() (if necessary) into 
 single method call. If no value is passed, the default of 1 is returned.  Returns
 an object of type L<WWW::StatsMix::Stat>.
 
-   +--------------+----------------------------------------------------------------------------+
-   | Key          | Description                                                                |
-   +--------------+----------------------------------------------------------------------------+
-   | name         | The name of the metric you are tracking. If a metric with that name does   |
-   | (required)   | not exist in your account, one will be created automatically.              |
-   |              |                                                                            |
-   | value        | The numeric value of the stat with a decimal precision of two. Decimal (up |
-   | (optional)   | to 11 digits on the left side of the decimal point, two on the right). If  |
-   |              | missing default value 1 is assigned.                                       |
-   |              |                                                                            |
-   | generated_at | Datetime for the stat. If not set, defaults to the current timestamp. This |
-   | (optional)   | is the datetime to be used in the charts. Valid format is YYYY-MM-DD.      |
-   |              |                                                                            |
-   | meta         | hashref data (key,value pair) about anything associated with the stat.     |
-   | (optional)   |                                                                            |
-   |              |                                                                            |
-   | ref_id       | Optional reference id for a stat. If a stat already exists for the named   |
-   | (optional)   | metric and the given ref_id, the value (and optionally generated_at and    |
-   |              | meta) will be updated instead of created.                                  |
-   |              |                                                                            |
-   | profile_id   | The unique id of the profile this stat belongs to. If not set, the metric  |
-   | (optional)   | will use the first profile_id created in your account. (Developer, Basic,  |
-   |              | and Standard plans only have one profile.)                                 |
-   +--------------+----------------------------------------------------------------------------+
+   +--------------+-------------------------------------------------------------+
+   | Key          | Description                                                 |
+   +--------------+-------------------------------------------------------------+
+   | name         | The name of the metric you are tracking. If a metric with   |
+   | (required)   | that name does not exist in your account, one will be       |
+   |              | created automatically,                                      |
+   |              |                                                             |
+   | value        | The numeric value of the stat with a decimal precision of   |
+   | (optional)   | two. Decimal (up to 11 digits on the left side of the       |
+   |              | decimal point, two on the right). If missing default value  |
+   |              | 1 is assigned.                                              |
+   |              |                                                             |
+   | generated_at | Datetime for the stat. If not set, defaults to the current  |
+   | (optional)   | timestaamp. This is the datetime to be used in the charts.  |
+   |              | Valid format is YYYY-MM-DD.                                 |
+   |              |                                                             |
+   | meta         | hashref data (key,value pair) about anything associated with|
+   | (optional)   | the stat.                                                   |
+   |              |                                                             |
+   | ref_id       | Optional reference id for a stat. If a stat already exists  |
+   | (optional)   | for the named metric and the given ref_id, the value (and   |
+   |              | optionally generated_at and meta) will be updated instead of|
+   |              | created.                                                    |
+   |              |                                                             |
+   | profile_id   | The unique id of the profile this stat belongs to. If not   |
+   | (optional)   | set, the metric will use the first profile_id created in    |
+   |              | your account. (Developer, Basic and Standard plans only have|
+   |              | one profile.)                                               |
+   +--------------+-------------------------------------------------------------+
 
    use strict; use warnings;
    use WWW::StatsMix;

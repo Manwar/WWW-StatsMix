@@ -22,5 +22,4 @@ t/09-delete_stat.t
 t/10-get_stats.t
 t/11-track.t
 t/manifest.t
-t/signature.t
 t/pod.t

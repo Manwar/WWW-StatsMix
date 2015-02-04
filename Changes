@@ -1,5 +1,9 @@
 Revision history for WWW-StatsMix
 
+0.06  Wed Feb 04 11:12:00 2015
+      - Removed redundant unit test t/signature.t.
+      - Tidied up pod document of WWW::StatsMix.
+
 0.05  Sat Jan 17 11:00:00 2015
       - Removed SIGNATURE file.
       - Updated MANIFEST.SKIP file to ignore folder 'eumm/'.

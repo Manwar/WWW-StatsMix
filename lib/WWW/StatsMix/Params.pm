@@ -1,6 +1,6 @@
 package WWW::StatsMix::Params;
 
-$WWW::StatsMix::Params::VERSION = '0.05';
+$WWW::StatsMix::Params::VERSION = '0.06';
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ WWW::StatsMix::Params - Placeholder for parameters for WWW::StatsMix
 
 =head1 VERSION
 
-Version 0.05
+Version 0.06
 
 =cut
 

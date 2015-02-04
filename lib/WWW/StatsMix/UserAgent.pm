@@ -1,6 +1,6 @@
 package WWW::StatsMix::UserAgent;
 
-$WWW::StatsMix::UserAgent::VERSION = '0.05';
+$WWW::StatsMix::UserAgent::VERSION = '0.06';
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ WWW::StatsMix::UserAgent - StatsMix API user agent library.
 
 =head1 VERSION
 
-Version 0.05
+Version 0.06
 
 =cut
 
