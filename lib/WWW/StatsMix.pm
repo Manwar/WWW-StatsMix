@@ -1,6 +1,6 @@
 package WWW::StatsMix;
 
-$WWW::StatsMix::VERSION = '0.06';
+$WWW::StatsMix::VERSION = '0.07';
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ WWW::StatsMix - Interface to StatsMix API.
 
 =head1 VERSION
 
-Version 0.06
+Version 0.07
 
 =cut
 
